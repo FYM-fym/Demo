@@ -2,6 +2,7 @@ import java.util.Comparator;
 
 public class Block {
         int fym;
+        double twt;
         public Blockfield blockfield;//length,width
         public int xPos;
         public int yPos;
