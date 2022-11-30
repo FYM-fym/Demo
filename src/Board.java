@@ -4,15 +4,15 @@ import java.util.HashSet;
 
 public class Board  {
     static final int MINPOS = 0;
-    static  int MAXXPOS ;
-    static  int MAXYPOS ;
+    static final int MAXXPOS=3 ;
+    static final int MAXYPOS=4 ;
     Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    HashSet<Board> existedBoards = new HashSet<Board>();
-    //    Board previousBoard;
+    HashSet<Board> connectedBoards = new HashSet<Board>();
+//    Board previousBoard;
 //    Board nextBoard;
     private String hashString;
     private int hashCode;
-        private boolean hashCodeCalculated;
+    private boolean hashCodeCalculated;
     int idOfBoardExplored;
 
     //StepNumber stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
@@ -20,26 +20,19 @@ public class Board  {
     int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
     int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
-    boolean isBorderLineNode = false;//?
+    boolean isBorderLineNode = false;
 //    GameSolverData gameSolverData = null;
 
     public Board(Block[] blocks) {
         this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
-    }
-
-    public Board(Block[] blocks,int maxX,int maxY) {
-        this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
-        MAXXPOS=maxX;
-        MAXYPOS=maxY;
+        Arrays.sort(blocks, Block.blockComparator);
     }
 
     public Board(Block[] sortedblocks, String hashString) {
         this.blocks = sortedblocks;
     }
 
-    //该构造器用于移动后创建新的棋盘
+//该构造器用于移动后创建新的棋盘
     public Board(Board oldBoard, Block oldBlock, Block newBlock) {
         blocks = new Block[oldBoard.blocks.length];
         for (int i = 0; i < blocks.length; i++) {
@@ -49,10 +42,10 @@ public class Board  {
                 blocks[i] = newBlock;
             }
         }
-//        Arrays.sort(blocks, Block.blockComparator);
+        Arrays.sort(blocks, Block.blockComparator);
     }
 
-    //该block数组是否有效，要求每一个block都是有效移动位置
+//该block数组是否有效，要求每一个block都是有效移动位置
     public boolean isValid() {
         for (int i = 0; i < blocks.length; i++) {
             if (!isValidblock(blocks[i])) {
@@ -73,9 +66,9 @@ public class Board  {
         // No overlapping block placements
         for (Block block : blocks) {
             if (block != oldBlock) {
-                /*if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
+                if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
                     return false;
-                }*/
+                }
             }
         }
         return true;
@@ -90,20 +83,20 @@ public class Board  {
      * other blocks.
      */
 
-    private boolean isValidMove(Block oldBlock, Block newBlock) {
+    private boolean isValidMove(Block block, ) {
 
         assert newBlock != null;
         // The block is within the board boundary
         assert isblockInBoundary(newBlock.blockfield, newBlock.xPos, newBlock.yPos);
         //减少了移动的种类，是否需要？？？
         // No overlapping block placements  没有跨过其它棋子移动
-        for (int i = 0; i < blocks.length; i++) {
-            if (blocks[i] != oldBlock) {
-                /*if (areOverlappingblocks(blocks[i], newBlock)) {
-                    return false;
-                }*/
-            }
-        }
+//        for (int i = 0; i < blocks.length; i++) {
+//            if (blocks[i] != oldBlock) {
+//                if (areOverlappingblocks(blocks[i], newBlock)) {
+//                    return false;
+//                }
+//            }
+//        }
         return true;
     }
 
@@ -119,28 +112,29 @@ public class Board  {
      * xPos overlapping = a overlaps b from left or right
      * yPos overlapping = a overlaps b from up or down
      */
-    /*private static boolean areOverlappingblocks(Block a, Block b) {
-        return (b.xPos >= a.xPos
-                && b.xPos <= a.xPos + a.blockfield.width - 1
-                || a.xPos >= b.xPos
-                && a.xPos <= b.xPos + b.blockfield.width - 1)
-                && (b.yPos >= a.yPos
-                && b.yPos <= a.yPos + a.blockfield.height - 1
-                || a.yPos >= b.yPos
-                && a.yPos <= b.yPos + b.blockfield.height - 1);
-    }
 
-
-    private static boolean areOverlappingblocks(Block a, Block b, int deltaXPos, int deltaYPos) {
-        return (b.xPos + deltaXPos >= a.xPos
-                && b.xPos + deltaXPos <= a.xPos + a.blockfield.width - 1
-                || a.xPos >= b.xPos + deltaXPos
-                && a.xPos <= b.xPos + deltaXPos + b.blockfield.width - 1)
-                && (b.yPos + deltaYPos >= a.yPos
-                && b.yPos + deltaYPos <= a.yPos + a.blockfield.height - 1
-                || a.yPos >= b.yPos + deltaYPos
-                && a.yPos <= b.yPos + deltaYPos + b.blockfield.height - 1);
-    }*/
+//    private static boolean areOverlappingblocks(Block a, Block b) {
+//        return (b.xPos >= a.xPos
+//                && b.xPos <= a.xPos + a.blockfield.width - 1
+//                || a.xPos >= b.xPos
+//                && a.xPos <= b.xPos + b.blockfield.width - 1)
+//                && (b.yPos >= a.yPos
+//                && b.yPos <= a.yPos + a.blockfield.height - 1
+//                || a.yPos >= b.yPos
+//                && a.yPos <= b.yPos + b.blockfield.height - 1);
+//    }
+//
+//
+//    private static boolean areOverlappingblocks(Block a, Block b, int deltaXPos, int deltaYPos) {
+//        return (b.xPos + deltaXPos >= a.xPos
+//                && b.xPos + deltaXPos <= a.xPos + a.blockfield.width - 1
+//                || a.xPos >= b.xPos + deltaXPos
+//                && a.xPos <= b.xPos + deltaXPos + b.blockfield.width - 1)
+//                && (b.yPos + deltaYPos >= a.yPos
+//                && b.yPos + deltaYPos <= a.yPos + a.blockfield.height - 1
+//                || a.yPos >= b.yPos + deltaYPos
+//                && a.yPos <= b.yPos + deltaYPos + b.blockfield.height - 1);
+//    }
 
     /**
      * @return hashString
@@ -176,7 +170,7 @@ public class Board  {
     public int hashCode() {
         if (!hashCodeCalculated) {
             hashCode = hashString().hashCode();
-//            hashCodeCalculated = true;
+            hashCodeCalculated = true;
         }
         return hashCode;
     }
@@ -210,24 +204,8 @@ public class Board  {
         return;
     }
 
-    public BlockType getType(int x, int y){ //根据x, y的值判断block的类型
-        for (int i = 0; i < blocks.length; i++){
-            if (Math.abs(blocks[i].xPos - x) <= 1 && Math.abs(blocks[i].yPos - y) <= 1 ){
-                if (blocks[i].xPos == x && blocks[i].yPos == y){
-                    return blocks[i].blockfield.blockType;
-                }
-                else if (blocks[i].blockfield.blockType == BlockType.VERTICAL){
-                    if (blocks[i].xPos == x && blocks[i].yPos + 1 == y) return blocks[i].blockfield.blockType;
-                }else if (blocks[i].blockfield.blockType == BlockType.HORIZONTAL){
-                    if (blocks[i].xPos + 1 == x && blocks[i].yPos == y) return blocks[i].blockfield.blockType;
-                }else if (blocks[i].blockfield.blockType == BlockType.SQUARE){
-                    if ((blocks[i].xPos == x && blocks[i].yPos + 1 == y) ||(blocks[i].xPos + 1 == x && blocks[i].yPos == y) || (blocks[i].xPos + 1 == x && blocks[i].yPos == y + 1)){
-                        return blocks[i].blockfield.blockType;
-                    }
-                }
-            }
-        }
-       return null;
+    public void getType(){
+
     }
 
 
