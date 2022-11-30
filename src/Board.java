@@ -211,6 +211,10 @@ public class Board  {
         return;
     }
 
+    public void getType(){
+
+    }
+
 
     /**
      * @param nextNode
