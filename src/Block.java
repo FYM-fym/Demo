@@ -9,6 +9,8 @@ import java.util.Scanner;
 
 public class Block {
         public Blockfield blockfield;//length,width
+    int o = 0;
+    int i = 9;
         public int xPos;
         public int yPos;
         private String hashString;  //当前块的哈希值
