@@ -54,7 +54,7 @@ public class GameSolver {
 protected void findOneShortestPath() {
     Board iterator = solutionNode;
     while (iterator != game.initialBoard) {
-        ArrayList<Board> connected = new ArrayList<Board>(iterator.existedBoards);
+        ArrayList<Board> connected = new ArrayList<Board>(iterator.connectedBoards);
         connected.sort(iterator.new StepToInitialNodeComparator());
         Board previousStep = connected.get(0);
         previousStep.stepNumberToSolution = iterator.stepNumberToSolution + 1;
@@ -94,8 +94,8 @@ protected void findOneShortestPath() {
             newBoard.checkWhetherSolved();
 
         }
-        newBoard.existedBoards.add(currentBoard);
-        currentBoard.existedBoards.add(newBoard);
+        newBoard.connectedBoards.add(currentBoard);
+        currentBoard.connectedBoards.add(newBoard);
         return newBoard;
     }
 
