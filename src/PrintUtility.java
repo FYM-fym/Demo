@@ -52,12 +52,12 @@ public class PrintUtility {
             blockNameMapping.put(game.initialBoard.blocks[i], game.initialBoard.blocks[i].blockfield);
         }
         do {
-            assert iterator.connectedBoards.size() > 0;
+            assert iterator.existedBoards.size() > 0;
             Board nextBoardBestSolution = null;
             Move moveBestSolution = null;
             tempString = "";
             if (iterator.stepNumberToSolution > 0) {
-                ArrayList<Board> connected = new ArrayList<Board>(iterator.connectedBoards);
+                ArrayList<Board> connected = new ArrayList<Board>(iterator.existedBoards);
 
                 connected.sort(iterator.new StepToSolutionComparator());
                 nextBoardBestSolution = connected.get(0);
