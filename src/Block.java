@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class Block {
 
+
         public Blockfield blockfield;//length,width
         public int xPos;
         public int yPos;
