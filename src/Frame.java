@@ -64,7 +64,6 @@ class DrawPanel extends JPanel{
             for (int i = 0; i < row; i++){
                 for (int j = 0; j < column; j++){
                     System.out.print(skip[i][j]);
-                    System.out.println(skip[0][0] == 0);
                     if (skip[i][j] == 0) {
                         g.drawRect(100 + 120 * j, 80 + 80 * i, 120, 80); //画1*1的方块
                     }
