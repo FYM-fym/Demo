@@ -12,13 +12,13 @@ public class Board  {
 //    Board nextBoard;
     private String hashString;
     private int hashCode;
-    //    private boolean hashCodeCalculated;
+        private boolean hashCodeCalculated;
     int idOfBoardExplored;
 
     //StepNumber stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
     //StepNumber stepNumberToSolution = StepNumber.NOT_SOLVED; //step number until the end of best solution.  last step being 0;
-//    int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
-//    int stepNumberToSolution = Integer.MAX_VALUE;
+    int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
+    int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
     boolean isBorderLineNode = false;//?
 //    GameSolverData gameSolverData = null;
@@ -73,9 +73,9 @@ public class Board  {
         // No overlapping block placements
         for (Block block : blocks) {
             if (block != oldBlock) {
-                if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
+                /*if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
                     return false;
-                }
+                }*/
             }
         }
         return true;
@@ -99,9 +99,9 @@ public class Board  {
         // No overlapping block placements  没有跨过其它棋子移动
         for (int i = 0; i < blocks.length; i++) {
             if (blocks[i] != oldBlock) {
-                if (areOverlappingblocks(blocks[i], newBlock)) {
+                /*if (areOverlappingblocks(blocks[i], newBlock)) {
                     return false;
-                }
+                }*/
             }
         }
         return true;
@@ -119,8 +119,7 @@ public class Board  {
      * xPos overlapping = a overlaps b from left or right
      * yPos overlapping = a overlaps b from up or down
      */
-
-    private static boolean areOverlappingblocks(Block a, Block b) {
+    /*private static boolean areOverlappingblocks(Block a, Block b) {
         return (b.xPos >= a.xPos
                 && b.xPos <= a.xPos + a.blockfield.width - 1
                 || a.xPos >= b.xPos
@@ -141,7 +140,7 @@ public class Board  {
                 && b.yPos + deltaYPos <= a.yPos + a.blockfield.height - 1
                 || a.yPos >= b.yPos + deltaYPos
                 && a.yPos <= b.yPos + deltaYPos + b.blockfield.height - 1);
-    }
+    }*/
 
     /**
      * @return hashString
@@ -209,6 +208,26 @@ public class Board  {
             }
         }
         return;
+    }
+
+    public BlockType getType(int x, int y){ //根据x, y的值判断block的类型
+        for (int i = 0; i < blocks.length; i++){
+            if (Math.abs(blocks[i].xPos - x) <= 1 && Math.abs(blocks[i].yPos - y) <= 1 ){
+                if (blocks[i].xPos == x && blocks[i].yPos == y){
+                    return blocks[i].blockfield.blockType;
+                }
+                else if (blocks[i].blockfield.blockType == BlockType.VERTICAL){
+                    if (blocks[i].xPos == x && blocks[i].yPos + 1 == y) return blocks[i].blockfield.blockType;
+                }else if (blocks[i].blockfield.blockType == BlockType.HORIZONTAL){
+                    if (blocks[i].xPos + 1 == x && blocks[i].yPos == y) return blocks[i].blockfield.blockType;
+                }else if (blocks[i].blockfield.blockType == BlockType.SQUARE){
+                    if ((blocks[i].xPos == x && blocks[i].yPos + 1 == y) ||(blocks[i].xPos + 1 == x && blocks[i].yPos == y) || (blocks[i].xPos + 1 == x && blocks[i].yPos == y + 1)){
+                        return blocks[i].blockfield.blockType;
+                    }
+                }
+            }
+        }
+       return null;
     }
 
 
