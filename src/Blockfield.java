@@ -1,6 +1,7 @@
 public class Blockfield {
-//    块的一些属性，与type相对应
+    //    块的一些属性，与type相对应
     public BlockType blockType;
+    public int[] number;
     public int width;
     public int height;
     public Blockfield(BlockType blockType){
@@ -19,11 +20,13 @@ public class Blockfield {
                 height = 2;
                 break;
             case SINGLE:
+                width = 1;
+                height = 1;
+                break;
             case BLANK:
                 width = 1;
                 height = 1;
                 break;
-
         }
     }
 }

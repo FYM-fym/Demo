@@ -26,25 +26,25 @@ public class Move {
                 deltaXPos = 1;
                 deltaYPos = 0;
                 break;
-            case UP2:
-                deltaXPos = 0;
-                deltaYPos = 2;
-                break;
-            case DOWN2:
-                deltaXPos = 0;
-                deltaYPos = -2;
-                break;
-            case LEFT2:
-                deltaXPos = -2;
-                deltaYPos = 0;
-                break;
-            case RIGHT2:
-                deltaXPos = 2;
-                deltaYPos = 0;
-                break;
-            case NOTHING:
-                deltaXPos = 0;
-                deltaYPos = 0;
+//            case UP2:
+//                deltaXPos = 0;
+//                deltaYPos = 2;
+//                break;
+//            case DOWN2:
+//                deltaXPos = 0;
+//                deltaYPos = -2;
+//                break;
+//            case LEFT2:
+//                deltaXPos = -2;
+//                deltaYPos = 0;
+//                break;
+//            case RIGHT2:
+//                deltaXPos = 2;
+//                deltaYPos = 0;
+//                break;
+//            case NOTHING:
+//                deltaXPos = 0;
+//                deltaYPos = 0;
 //            case UPLEFT:
 //                deltaXPos = -1;
 //                deltaYPos = 1;
@@ -99,21 +99,21 @@ public class Move {
         else if (deltaXPos == 1 && deltaYPos == 0) {
             this.moveType = MoveType.RIGHT;
         }
-        else if (deltaXPos == 0 && deltaYPos == 2) {
-            this.moveType = MoveType.UP2;
-        }
-        else if (deltaXPos == 0 && deltaYPos == -2) {
-            this.moveType = MoveType.DOWN2;
-        }
-        else if (deltaXPos == -2 && deltaYPos == 0) {
-            this.moveType = MoveType.LEFT2;
-        }
-        else if (deltaXPos == 2 && deltaYPos == 0) {
-            this.moveType = MoveType.RIGHT2;
-        }
-        else if(deltaXPos == 0 && deltaYPos == 0){
-            this.moveType=MoveType.NOTHING;
-        }
+//        else if (deltaXPos == 0 && deltaYPos == 2) {
+//            this.moveType = MoveType.UP2;
+//        }
+//        else if (deltaXPos == 0 && deltaYPos == -2) {
+//            this.moveType = MoveType.DOWN2;
+//        }
+//        else if (deltaXPos == -2 && deltaYPos == 0) {
+//            this.moveType = MoveType.LEFT2;
+//        }
+//        else if (deltaXPos == 2 && deltaYPos == 0) {
+//            this.moveType = MoveType.RIGHT2;
+//        }
+//        else if(deltaXPos == 0 && deltaYPos == 0){
+//            this.moveType=MoveType.NOTHING;
+//        }
 //        else if (deltaXPos == -1 && deltaYPos == 1) {
 //                this.moveType = MoveType.LEFTUP;
 //                newBlock=GameSolver.calcNewBlock(oldBoard, oldBlock, moveType);

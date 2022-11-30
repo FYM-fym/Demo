@@ -4,35 +4,42 @@ import java.util.HashSet;
 
 public class Board  {
     static final int MINPOS = 0;
-    static final int MAXXPOS=3 ;
-    static final int MAXYPOS=4 ;
+    static  int MAXXPOS ;
+    static  int MAXYPOS ;
     Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    HashSet<Board> connectedBoards = new HashSet<Board>();
-//    Board previousBoard;
+    HashSet<Board> existedBoards = new HashSet<Board>();
+    //    Board previousBoard;
 //    Board nextBoard;
     private String hashString;
     private int hashCode;
-    private boolean hashCodeCalculated;
+    //    private boolean hashCodeCalculated;
     int idOfBoardExplored;
 
     //StepNumber stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
     //StepNumber stepNumberToSolution = StepNumber.NOT_SOLVED; //step number until the end of best solution.  last step being 0;
-    int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
-    int stepNumberToSolution = Integer.MAX_VALUE;
+//    int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
+//    int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
-    boolean isBorderLineNode = false;
+    boolean isBorderLineNode = false;//?
 //    GameSolverData gameSolverData = null;
 
     public Board(Block[] blocks) {
         this.blocks = blocks;
-        Arrays.sort(blocks, Block.blockComparator);
+//        Arrays.sort(blocks, Block.blockComparator);
+    }
+
+    public Board(Block[] blocks,int maxX,int maxY) {
+        this.blocks = blocks;
+//        Arrays.sort(blocks, Block.blockComparator);
+        MAXXPOS=maxX;
+        MAXYPOS=maxY;
     }
 
     public Board(Block[] sortedblocks, String hashString) {
         this.blocks = sortedblocks;
     }
 
-//该构造器用于移动后创建新的棋盘
+    //该构造器用于移动后创建新的棋盘
     public Board(Board oldBoard, Block oldBlock, Block newBlock) {
         blocks = new Block[oldBoard.blocks.length];
         for (int i = 0; i < blocks.length; i++) {
@@ -42,10 +49,10 @@ public class Board  {
                 blocks[i] = newBlock;
             }
         }
-        Arrays.sort(blocks, Block.blockComparator);
+//        Arrays.sort(blocks, Block.blockComparator);
     }
 
-//该block数组是否有效，要求每一个block都是有效移动位置
+    //该block数组是否有效，要求每一个block都是有效移动位置
     public boolean isValid() {
         for (int i = 0; i < blocks.length; i++) {
             if (!isValidblock(blocks[i])) {
@@ -170,7 +177,7 @@ public class Board  {
     public int hashCode() {
         if (!hashCodeCalculated) {
             hashCode = hashString().hashCode();
-            hashCodeCalculated = true;
+//            hashCodeCalculated = true;
         }
         return hashCode;
     }
