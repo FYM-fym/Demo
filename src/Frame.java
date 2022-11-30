@@ -4,6 +4,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 
 public class Frame extends JFrame {
+    
     public Frame(int row, int column, int[][] matrix, int count, int[] num, String[] type){
         setBounds(500,100,1000,800);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
