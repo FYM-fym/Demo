@@ -19,9 +19,6 @@ public class Blockfield {
                 height = 2;
                 break;
             case SINGLE:
-                width = 1;
-                height = 1;
-                break;
             case BLANK:
                 width = 1;
                 height = 1;

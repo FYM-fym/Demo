@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../java CS102/ChessProject/ChessProject.iml" filepath="$PROJECT_DIR$/../../java CS102/ChessProject/ChessProject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../java CS102/Test/Test.iml" filepath="$PROJECT_DIR$/../../java CS102/Test/Test.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo.iml" filepath="$PROJECT_DIR$/demo.iml" />
     </modules>
   </component>

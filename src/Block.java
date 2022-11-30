@@ -1,4 +1,11 @@
+import javax.swing.*;
+import java.awt.*;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Scanner;
 
 public class Block {
         public Blockfield blockfield;//length,width
@@ -57,7 +64,40 @@ public class Block {
         return false;
     }
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
+        String filename = "input/sample";
+        Path path = Paths.get(filename);
+        Scanner scanner = new Scanner(path);
+        System.out.println("Read text file using Scanner");
+// 一行一行地读取
+        int row = scanner.nextInt();
+        int column = scanner.nextInt();
+        int[][] matrix = new int[row][column];
+        for (int i = 0; i < row; i++){
+            for (int j = 0; j < column; j++){
+                matrix[i][j] = scanner.nextInt();
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
+        }
+        int count = scanner.nextInt();
+        int[] num = new int[count];
+        String[] type = new String[count];
+        for (int i = 0; i < count; i++){
+            num[i] = scanner.nextInt();
+            type[i] = scanner.next();
+        }
+        System.out.println(123456789);
+        new Frame(row, column, matrix, count, num, type).setVisible(true);
+        System.out.println(123456789);
+        System.out.println(Arrays.toString(num));
+        System.out.println(Arrays.toString(type));
+        /*while(scanner.hasNextLine()){
+            //process each line
+            String line = scanner.nextLine();
+            System.out.println(line);
+        }*/
+        scanner.close();
+        System.out.println("我是最后啦");
     }
 }
