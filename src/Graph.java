@@ -1,108 +1,72 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.*;
 
 public class Graph {
-    //顶点元素
-    private ArrayList<Board> boardList; //每局棋盘的状况
-    //邻接矩阵
-    private int[][] edges;
-    private int edgesNum;
-    private boolean[] isSelected;
-    //传入顶点个数
-    public Graph(int x){
-        this.boardList = new ArrayList<>();
-        this.edges = new int[x][x];
-        this.isSelected = new boolean[x];
-    }
-
-    //插入顶点方法
-    public void insertVertex(Board newBoard){
-        this.boardList.add(newBoard);
-
-    }
-
-    //添加图边
-    public void insertEdges(int x, int y){
-        //无向图
-        edges[x][y] = 1;
-        edges[y][x] = 1;
-        edgesNum++;
-    }
-
-    //返回顶点个数
-    public int getVertexSize(){
-        return this.boardList.size();
-    }
-
-    //返回边的数量
-    public int getEdgesSize(){
-        return this.edgesNum;
-    }
-
-
-    //输出邻接矩阵图案
-    public void showList(){
-        for(int[] arr:edges){
-            System.out.println(Arrays.toString(arr));
+    private int V;  // 顶点数目
+    private int E;  // 边的数目
+    private Vertex<Integer>[] adj; //邻接表
+    private Graph(int V) {
+        this.V = V;
+        this.E = 0;
+        // 实例化邻接表
+        adj = new Vertex[V];
+        for (int i = 0; i < V; i++) {
+            adj[i] = new Vertex<>();
+            adj[i].setData(i);
         }
     }
 
-    //给定一个索引顶点位置，查找当前索引的第一个邻接点
-    public int getFirstVertex(int index){
-        for(int i = 0 ; i < boardList.size(); i++){
-            if(edges[index][i] > 0){
-                return i;
-            }
-        }
-        return -1;
+    private void addEdge(int v, int w) {
+        // 将w添加到v的链表中
+        adj[v].add(new Edge(w, null));
+        adj[w].add(new Edge(v, null));
+        E++;
     }
 
-    //根据给定的坐标，获取下一个邻接顶点
-    public int getNextVertex(int x, int y){
-        for(int i = y + 1; i < boardList.size(); i++){
-            if (edges[x][i] > 0){
-                return i;
-            }
-        }
-        return -1;
+    // 获得某个顶点的链表
+    public Vertex getVertex(int v) {
+        return adj[v];
     }
 
-    //访问的顶点
-    public Board getValueIndex(int i){
-        return this.boardList.get(i);
+    public int getV() {
+        return V;
     }
 
-
-    public void bfs(boolean[] isSelected, int i){
-        //取出头结点
-        int u;
-        //第一个邻接点
-        int w ;
-        //创建一个队列
-        LinkedList queue = new LinkedList();
-        System.out.print(getValueIndex(i));
-        isSelected[i] = true;
-        queue.addLast(i);
-        while(!queue.isEmpty()){
-            u = (Integer)queue.removeFirst();
-            w = getFirstVertex(u);
-            while(w != -1){
-                if(!isSelected[w]){
-                    System.out.print(getValueIndex(w));
-                    isSelected[w] = true;
-                    queue.addLast(w);
-                }
-                w = getNextVertex(i,w);
-            }
-        }
+    public void setV(int v) {
+        V = v;
     }
 
-    public void bfs(){
-        for(int i = 0 ; i < getEdgesSize(); i++){
-            if(!isSelected[i]){
-                bfs(isSelected,i);
-            }
+    public int getE() {
+        return E;
+    }
+
+    public void setE(int e) {
+        E = e;
+    }
+
+    public Graph(Scanner input) {
+        // 读取V并初始化图
+        /*this(input.nextInt());
+        int E = input.nextInt();
+        for (int i = 0; i < E; i++) {
+            int v = input.nextInt();
+            int w = input.nextInt();
+            addEdge(v, w);
+        }*/
+        this(6);
+        int E = 8;
+        int a[][] = {
+                {0, 5},
+                {2, 4},
+                {2, 3},
+                {1, 2},
+                {0, 1},
+                {0, 4},
+                {3, 5},
+                {0, 2}
+        };
+        for (int i = 0; i < a.length; i++) {
+            addEdge(a[i][0], a[i][1]);
         }
     }
 }
+
