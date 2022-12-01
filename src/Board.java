@@ -26,6 +26,11 @@ public class Board  {
     public Board parentNode;
     public Board link;
 
+    public Board(){
+
+    }
+
+
     public Board(Block[] blocks) {
         this.blocks = blocks;
 //        Arrays.sort(blocks, Block.blockComparator);

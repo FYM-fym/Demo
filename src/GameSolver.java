@@ -3,7 +3,7 @@ import edu.princeton.cs.algs4.*;
 import edu.princeton.cs.algs4.Queue;
 
 public class GameSolver {
-    private static Graph graph;
+    Graph graph;
     Game game;
     protected HashMap<String, Board> boardConfigsExplored = new HashMap<>();
     protected int nextIdOfBoardExplored = 0;
@@ -58,12 +58,8 @@ public class GameSolver {
                         if (newBlock == null) continue; // Invalid move
                         Board nextBoard = getNextBoard(currentBoard, currentBoard.blocks[i], newBlock);
 
-                        graph.insertVertex(nextBoard);
-                        if (currentBoard.stepNumberToInitialNode == nextBoard.stepNumberToInitialNode) {
-                            graph.insertEdges();
-                        }
 
-                        graph.showList();
+
 
                         //??
 //                    PrintUtility.printTestMove(currentBoard, i, currentBoard.blocks[i], moveType, nextBoard);
