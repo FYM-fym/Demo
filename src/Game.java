@@ -7,7 +7,6 @@ public class Game {
 //        this.name = name;
         this.initialBoard = initialBoard;
         initialBoard.stepNumberToInitialNode = 0;
-
     }
 
     public static void main(String[] args) {
@@ -21,9 +20,6 @@ public class Game {
 //        System.out.println("<html><body><font face=Courier>");
         PrintUtility.printFinalSolution(game, gameSolver);
         System.out.println("Run time " + ((float)duration)/1000000000.0 +" seconds");
-
-
-
     }
 
 
