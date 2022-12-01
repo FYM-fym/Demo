@@ -49,6 +49,7 @@ public class GameSolver {
         while (currentBoard != null) {
             for (int i = 0; i < currentBoard.blocks.length; i++) {
             //当前可移动的类型
+
                 MoveType[] moveTypes = validMoveTypes.get(currentBoard.blocks[i].blockfield.blockType);
                 for (MoveType moveType: moveTypes) {
                     Block newBlock = calcNewBlock(currentBoard, currentBoard.blocks[i], moveType);
