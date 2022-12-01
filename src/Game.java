@@ -4,7 +4,7 @@ public class Game {
 //    String name;
 
     public Game( Board initialBoard) {
-//        this.name = name;
+//      this.name = name;
         this.initialBoard = initialBoard;
         initialBoard.stepNumberToInitialNode = 0;
     }
@@ -13,7 +13,7 @@ public class Game {
         long startTime = System.nanoTime();
         GameSolver gameSolver = new GameSolver();
         Game game = initGame横刀立马();
-//        Game game = initGame四将连关();
+//      Game game = initGame四将连关();
         gameSolver.solve(game);
         long endTime = System.nanoTime();
         long duration = endTime - startTime;
