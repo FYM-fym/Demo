@@ -3,6 +3,7 @@ import edu.princeton.cs.algs4.*;
 import edu.princeton.cs.algs4.Queue;
 
 public class GameSolver {
+    private static Graph graph;
     Game game;
     protected HashMap<String, Board> boardConfigsExplored = new HashMap<>();
     protected int nextIdOfBoardExplored = 0;
@@ -45,40 +46,48 @@ public class GameSolver {
 }
      */
 
-    private void buildGraph(Board currentBoard) {
-        while (currentBoard != null) {
-            for (int i = 0; i < currentBoard.blocks.length; i++) {
-            //当前可移动的类型
 
-                MoveType[] moveTypes = validMoveTypes.get(currentBoard.blocks[i].blockfield.blockType);
-                for (MoveType moveType: moveTypes) {
-                    Block newBlock = calcNewBlock(currentBoard, currentBoard.blocks[i], moveType);
-                    if (newBlock == null) continue; // Invalid move
-                    Board nextBoard = getNextBoard(currentBoard, currentBoard.blocks[i], newBlock);
+        private void buildGraph (Board currentBoard){
+            int sameLayer = 0;
+            while (currentBoard != null) {
+                for (int i = 0; i < currentBoard.blocks.length; i++) {
+                    //当前可移动的类型
+                    MoveType[] moveTypes = validMoveTypes.get(currentBoard.blocks[i].blockfield.blockType);
+                    for (MoveType moveType : moveTypes) {
+                        Block newBlock = calcNewBlock(currentBoard, currentBoard.blocks[i], moveType);
+                        if (newBlock == null) continue; // Invalid move
+                        Board nextBoard = getNextBoard(currentBoard, currentBoard.blocks[i], newBlock);
 
-                    //??
+                        graph.insertVertex(nextBoard);
+                        if (currentBoard.stepNumberToInitialNode == nextBoard.stepNumberToInitialNode) {
+                            graph.insertEdges();
+                        }
+
+                        graph.showList();
+
+                        //??
 //                    PrintUtility.printTestMove(currentBoard, i, currentBoard.blocks[i], moveType, nextBoard);
 //                    if(!nextBoard.equals(solutionNode)&&nextBoard.isNewBoard){
 //                        boardConfigWorkQueue
 //
 //                    }
 
-                    if (nextBoard.stepNumberToSolution < Integer.MAX_VALUE) {
-                        solutionNode = nextBoard; //The first solution we reach is the fastest solution.
-                        return;
-                    }
+                        if (nextBoard.stepNumberToSolution < Integer.MAX_VALUE) {
+                            solutionNode = nextBoard; //The first solution we reach is the fastest solution.
+                            return;
+                        }
 
-                    // Only explore the nodes that have not been explored before.
-                    if (nextBoard.isNewBoard) {
-                        //PrintUtility.printTestMove(currentBoard, i, moveInTest, nextBoardInTest);
-                        boardConfigWorkQueue.enqueue(nextBoard);
+                        // Only explore the nodes that have not been explored before.
+                        if (nextBoard.isNewBoard) {
+                            //PrintUtility.printTestMove(currentBoard, i, moveInTest, nextBoardInTest);
+                            boardConfigWorkQueue.enqueue(nextBoard);
+                        }
                     }
                 }
+                if (!boardConfigWorkQueue.isEmpty())
+                    currentBoard = boardConfigWorkQueue.dequeue();
             }
-            if(!boardConfigWorkQueue.isEmpty())
-            currentBoard = boardConfigWorkQueue.dequeue();
         }
-    }
 //?
     protected void findOneShortestPath() {
         Board iterator = solutionNode;
