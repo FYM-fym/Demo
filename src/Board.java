@@ -6,8 +6,6 @@ public class Board  {
     static final int MINPOS = 0;
     static final int MAXXPOS=3 ;
     static final int MAXYPOS=4 ;
-
-
     Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
     HashSet<Board> connectedBoards = new HashSet<Board>();
 //    Board previousBoard;
