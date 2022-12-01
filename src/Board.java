@@ -4,10 +4,12 @@ import java.util.HashSet;
 
 public class Board  {
     static final int MINPOS = 0;
-    static  int MAXXPOS ;
-    static  int MAXYPOS ;
+    static final int MAXXPOS=3 ;
+    static final int MAXYPOS=4 ;
+
+
     Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    HashSet<Board> existedBoards = new HashSet<Board>();
+    HashSet<Board> connectedBoards = new HashSet<Board>();
 //    Board previousBoard;
 //    Board nextBoard;
     private String hashString;
@@ -20,29 +22,19 @@ public class Board  {
     int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
     int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
-    boolean isBorderLineNode = false;//?
+    boolean isBorderLineNode = false;
 //    GameSolverData gameSolverData = null;
-
-    public Board parentNode;
-    public Board link;
 
     public Board(Block[] blocks) {
         this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
-    }
-
-    public Board(Block[] blocks,int maxX,int maxY) {
-        this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
-        MAXXPOS=maxX;
-        MAXYPOS=maxY;
+        Arrays.sort(blocks, Block.blockComparator);
     }
 
     public Board(Block[] sortedblocks, String hashString) {
         this.blocks = sortedblocks;
     }
 
-    //该构造器用于移动后创建新的棋盘
+//该构造器用于移动后创建新的棋盘
     public Board(Board oldBoard, Block oldBlock, Block newBlock) {
         blocks = new Block[oldBoard.blocks.length];
         for (int i = 0; i < blocks.length; i++) {
@@ -52,166 +44,54 @@ public class Board  {
                 blocks[i] = newBlock;
             }
         }
-//        Arrays.sort(blocks, Block.blockComparator);
+        Arrays.sort(blocks, Block.blockComparator);
     }
 
-    public BlockType getType(int x, int y){ //根据x, y的值判断block的类型
-        for (int i = 0; i < blocks.length; i++){
-            if (Math.abs(blocks[i].xPos - x) <= 1 && Math.abs(blocks[i].yPos - y) <= 1 ){
-                if (blocks[i].xPos == x && blocks[i].yPos == y){
-                    return blocks[i].blockfield.blockType;
-                }
-                else if (blocks[i].blockfield.blockType == BlockType.VERTICAL){
-                    if (blocks[i].xPos == x && blocks[i].yPos + 1 == y) return blocks[i].blockfield.blockType;
-                }else if (blocks[i].blockfield.blockType == BlockType.HORIZONTAL){
-                    if (blocks[i].xPos + 1 == x && blocks[i].yPos == y) return blocks[i].blockfield.blockType;
-                }else if (blocks[i].blockfield.blockType == BlockType.SQUARE){
-                    if ((blocks[i].xPos == x && blocks[i].yPos + 1 == y) ||(blocks[i].xPos + 1 == x && blocks[i].yPos == y) || (blocks[i].xPos + 1 == x && blocks[i].yPos == y + 1)){
-                        return blocks[i].blockfield.blockType;
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    boolean isValidMove(Block oldBlock, MoveType moveType) {
-        if(oldBlock.blockfield.blockType == BlockType.SINGLE){
-            if(moveType == MoveType.UP){
-                if( getType(oldBlock.xPos, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos -1)) return false;
-            }
-            if(moveType == MoveType.DOWN){
-                if( getType(oldBlock.xPos, oldBlock.yPos +1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos +1)) return false;
-            }
-            if(moveType == MoveType.LEFT){
-                if( getType(oldBlock.xPos - 1, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos-1 , oldBlock.yPos)) return false;
-            }
-            if(moveType == MoveType.RIGHT){
-                if( getType(oldBlock.xPos +1, oldBlock.yPos) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos+1 , oldBlock.yPos)) return false;
-            }
-        }
-        if(oldBlock.blockfield.blockType == BlockType.SQUARE){
-            if(moveType == MoveType.UP){
-                if( getType(oldBlock.xPos, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos -1)) return false;
-                if( getType(oldBlock.xPos +1, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos +1, oldBlock.yPos -1)) return false;
-            }
-            if(moveType == MoveType.DOWN){
-                if( getType(oldBlock.xPos, oldBlock.yPos +2 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos +2)) return false;
-                if( getType(oldBlock.xPos +1, oldBlock.yPos +2 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos +1, oldBlock.yPos +2)) return false;
-            }
-            if(moveType == MoveType.LEFT){
-                if( getType(oldBlock.xPos-1, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos-1 , oldBlock.yPos)) return false;
-                if( getType(oldBlock.xPos -1, oldBlock.yPos +1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos -1, oldBlock.yPos +1)) return false;
-            }
-            if(moveType == MoveType.RIGHT){
-                if( getType(oldBlock.xPos +2, oldBlock.yPos  ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos+2 , oldBlock.yPos)) return false;
-                if( getType(oldBlock.xPos +2, oldBlock.yPos +1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos +2, oldBlock.yPos +1)) return false;
-            }
-        }
-        if(oldBlock.blockfield.blockType == BlockType.HORIZONTAL){
-            if(moveType == MoveType.UP){
-                if( getType(oldBlock.xPos, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos -1)) return false;
-                if( getType(oldBlock.xPos +1, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos +1, oldBlock.yPos -1)) return false;
-            }
-            if(moveType == MoveType.DOWN){
-                if( getType(oldBlock.xPos, oldBlock.yPos +1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos +1 )) return false;
-                if( getType(oldBlock.xPos +1, oldBlock.yPos +1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos +1, oldBlock.yPos +1 )) return false;
-            }
-            if(moveType == MoveType.LEFT){
-                if( getType(oldBlock.xPos-1, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos-1 , oldBlock.yPos)) return false;
-            }
-            if(moveType == MoveType.RIGHT){
-                if( getType(oldBlock.xPos +2, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos+2 , oldBlock.yPos )) return false;
-            }
-        }
-        if(oldBlock.blockfield.blockType == BlockType.VERTICAL){
-            if(moveType == MoveType.UP){
-                if( getType(oldBlock.xPos, oldBlock.yPos -1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos -1)) return false;
-            }
-            if(moveType == MoveType.DOWN){
-                if( getType(oldBlock.xPos, oldBlock.yPos +2 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos , oldBlock.yPos +2 )) return false;
-            }
-            if(moveType == MoveType.LEFT){
-                if( getType(oldBlock.xPos-1, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos-1 , oldBlock.yPos)) return false;
-                if( getType(oldBlock.xPos-1, oldBlock.yPos+1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos-1 , oldBlock.yPos+1)) return false;
-            }
-            if(moveType == MoveType.RIGHT){
-                if( getType(oldBlock.xPos +1, oldBlock.yPos ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos+1 , oldBlock.yPos )) return false;
-                if( getType(oldBlock.xPos+1, oldBlock.yPos+1 ) != BlockType.BLANK ) return false;
-                if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos+1 , oldBlock.yPos+1)) return false;
+//该block数组是否有效，要求每一个block都是有效移动位置
+    public boolean isValid() {
+        for (int i = 0; i < blocks.length; i++) {
+            if (!isValidblock(blocks[i])) {
+                return false;
             }
         }
         return true;
     }
 
-//    //该block数组是否有效，要求每一个block都是有效移动位置
-//    public boolean isValid() {
-//        for (int i = 0; i < blocks.length; i++) {
-//            if (!isValidblock(blocks[i])) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    private boolean isValidblock(Block a) {
-//        return isValidMove(a, a);
-//    }
-//
-//    boolean isValidMove(Block oldBlock, int deltaXPos, int deltaYPos) {
-//        // The block is within the board boundary
-//        if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos + deltaXPos, oldBlock.yPos + deltaYPos)) return false;
-//
-//        // No overlapping block placements
-//        for (Block block : blocks) {
-//            if (block != oldBlock) {
-//                if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//
-//    /**
-//     * @param oldBlock
-//     * @param newBlock
-//     * @return Check whether the move from oldBlockPlacment to newBlock is a valid move
-//     * The newBlock should be within the board boundary and does not overlap with any
-//     * other blocks.
-//     */
-//
-//    private boolean isValidMove(Block oldBlock, Block newBlock) {
-//
-//        assert newBlock != null;
-//        // The block is within the board boundary
-//        assert isblockInBoundary(newBlock.blockfield, newBlock.xPos, newBlock.yPos);
-//        //减少了移动的种类，是否需要？？？
-//        // No overlapping block placements  没有跨过其它棋子移动
+    private boolean isValidblock(Block a) {
+        return isValidMove(a, a);
+    }
+
+    boolean isValidMove(Block oldBlock, int deltaXPos, int deltaYPos) {
+        // The block is within the board boundary
+        if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos + deltaXPos, oldBlock.yPos + deltaYPos)) return false;
+
+        // No overlapping block placements
+        for (Block block : blocks) {
+            if (block != oldBlock) {
+                if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * @param oldBlock
+     * @param newBlock
+     * @return Check whether the move from oldBlockPlacment to newBlock is a valid move
+     * The newBlock should be within the board boundary and does not overlap with any
+     * other blocks.
+     */
+
+    private boolean isValidMove(Block block, ) {
+
+        assert newBlock != null;
+        // The block is within the board boundary
+        assert isblockInBoundary(newBlock.blockfield, newBlock.xPos, newBlock.yPos);
+        //减少了移动的种类，是否需要？？？
+        // No overlapping block placements  没有跨过其它棋子移动
 //        for (int i = 0; i < blocks.length; i++) {
 //            if (blocks[i] != oldBlock) {
 //                if (areOverlappingblocks(blocks[i], newBlock)) {
@@ -219,22 +99,22 @@ public class Board  {
 //                }
 //            }
 //        }
-//        return true;
-//    }
-//
+        return true;
+    }
+
     private static boolean isblockInBoundary(Blockfield block, int xPos, int yPos) {
         return (xPos >= MINPOS
                 && xPos + block.width - 1 <= MAXXPOS
                 && yPos >= MINPOS
                 && yPos + block.height - 1 <= MAXYPOS);
     }
-//
-//    /**
-//     * Check whether 2 blocks are overlapping each other.
-//     * xPos overlapping = a overlaps b from left or right
-//     * yPos overlapping = a overlaps b from up or down
-//     */
-//
+
+    /**
+     * Check whether 2 blocks are overlapping each other.
+     * xPos overlapping = a overlaps b from left or right
+     * yPos overlapping = a overlaps b from up or down
+     */
+
 //    private static boolean areOverlappingblocks(Block a, Block b) {
 //        return (b.xPos >= a.xPos
 //                && b.xPos <= a.xPos + a.blockfield.width - 1
@@ -265,8 +145,6 @@ public class Board  {
      * Note the blockPlacments[] is sorted by Block type and position for this to work.
      * Also note the name of the Block is not considered.
      */
-
-
 //    存棋盘的哈希值
     public String hashString() {
         if (hashString == null) {
@@ -294,7 +172,7 @@ public class Board  {
     public int hashCode() {
         if (!hashCodeCalculated) {
             hashCode = hashString().hashCode();
-//            hashCodeCalculated = true;
+            hashCodeCalculated = true;
         }
         return hashCode;
     }
@@ -326,6 +204,10 @@ public class Board  {
             }
         }
         return;
+    }
+
+    public void getType(){
+
     }
 
 
