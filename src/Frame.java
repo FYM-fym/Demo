@@ -1,87 +1,190 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Scanner;
+import java.util.Timer;
 
 public class Frame extends JFrame {
-    
-    public Frame(int row, int column, int[][] matrix, int count, int[] num, String[] type){
-        setBounds(500,100,1000,800);
+    Board board;
+    private String filePath;
+
+
+//    public Frame(int[][] matrix) {
+//        this.matrix = matrix;
+//    }
+
+    public Frame() throws IOException {
+//        System.out.println("构造函数");
+        setBounds(500, 100, 1000, 600);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        System.out.println("fym");
-        setContentPane(new DrawPanel(row, column, matrix,count, num, type));
-        System.out.println("fym");
+        setLayout(null);
+//        System.out.println("fym");
+        setVisible(false);
+//        System.out.println("fym");
         setTitle("DS BB");
+//        addBoard();
+
+
+//        setVisible(true);
+        addGoButton();
+        setVisible(true);
+        addLoadButton();
+        setVisible(true);
+
+//        setInitialBoard("C:\\Users\\Lenovo\\IdeaProjects\\Second\\input\\sample");
+//        setVisible(true);
     }
+
+    public Frame(Board board) {
+        this.board = board;
+    }
+
+
+//    public void addBoard() throws IOException {
+////        board.setLocation(200, 50);
+////        board.setInitialBoard();
+//        add(board);
+//    }
+
+
+    protected void repaint(Board board) {
+        this.setVisible(false);
+//        setContentPane(new DrawPanel(matrix));
+        repaint();
+        setVisible(true);
+    }
+
+    private void addGoButton() {
+        JButton button = new JButton("Go");
+        button.addActionListener((e) -> {
+//            repaint(board.matrix);
+        });
+        button.setLocation(350,20);
+        button.setSize(100, 50);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+    }
+
+    private void addLoadButton() {
+        JButton button = new JButton("Load");
+        button.addActionListener(e -> {
+            System.out.println("Click load");
+            filePath = JOptionPane.showInputDialog(this, "input the path here");
+            try {
+                setInitialBoard(filePath);
+                this.setVisible(true);
+                repaint();
+                addGoButton();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+            addLoadButton();
+        });
+
+        button.setLocation(550,20);
+        button.setSize(100, 50);
+        button.setFont(new Font("Rockwell", Font.BOLD, 20));
+        add(button);
+
+    }
+
+    public void setInitialBoard(String fileName) throws IOException {
+        String[] type;
+        Block[] board;
+        String filename = fileName;
+        Path path = Paths.get(filename);
+        Scanner scanner = new Scanner(path);
+//        System.out.println("Read text file using Scanner");
+// 一行一行地读取
+        int row = scanner.nextInt();
+        int column = scanner.nextInt();
+        int[][] matrix = new int[row][column];
+        board = new Block[row];
+
+        for (int i = 0; i < row; i++){
+            for (int j = 0; j < column; j++){
+                matrix[i][j] = scanner.nextInt();
+//                Block block=new Block(new Blockfield(BlockType.SINGLE,matrix[i][j]),i,j);
+//                board[j]=block;
+//                Game game=new Game(new Board(board,matrix));
+//                gameSolver.solve(game);
+//                System.out.print(matrix[i][j] + " ");
+            }
+//            System.out.println();
+        }
+        int count = scanner.nextInt();
+        int[] num = new int[count];
+        type = new String[count];
+        for (int i = 0; i < count; i++) {
+            num[i] = scanner.nextInt();
+            type[i] = scanner.next();
+        }
+//        new Frame(row, column, matrix, count, num, type).setVisible(true);
+
+//        System.out.println(123456789);
+
+//        System.out.println(123456789);
+//        System.out.println(Arrays.toString(num));
+//        System.out.println(Arrays.toString(type));
+        /*while(scanner.hasNextLine()){
+            //process each line
+            String line = scanner.nextLine();
+            System.out.println(line);
+        }*/
+        scanner.close();
+//        System.out.println("我是最后啦");
+        DrawPanel drawPanel =new DrawPanel(row,column,matrix,count,num,type);
+        this.setContentPane(drawPanel);
+    }
+
+//    public void readFileData(String fileName) throws FileNotFoundException {
+//        String[] type;
+//        //todo: read date from file
+//        File input = new File(fileName);
+//        if (!input.exists()) {
+//            System.out.println("File isn't exist");
+//            System.exit(0);
+//        }
+//        Scanner in = new Scanner(input);
+//        int row = in.nextInt();
+//        int column = in.nextInt();
+//        int[][] matrix = new int[row][column];
+//        for (int i = 0; i < row; i++){
+//            for (int j = 0; j < column; j++){
+//                matrix[i][j] = in.nextInt();
+////                Block block=new Block(new Blockfield(BlockType.SINGLE,matrix[i][j]),i,j);
+////                board[j]=block;
+////                Game game=new Game(new Board(board,matrix));
+////                gameSolver.solve(game);
+//                System.out.print(matrix[i][j] + " ");
+//            }
+////            System.out.println();
+//        }
+//        int count = in.nextInt();
+//        int[] num = new int[count];
+//        type = new String[count];
+//        for (int i = 0; i < count; i++) {
+//            num[i] = in.nextInt();
+//            type[i] = in.next();
+//        }
+////        System.out.println("read");
+//        Draw draw=new Draw(row,column,matrix,count,num,type);
+//        add(draw);
+//        this.setContentPane(draw);
+//        draw.setVisible(true);
+//        DrawPanel drawPanel=new DrawPanel(row,column,matrix,count,num,type);
+//        this.setContentPane(drawPanel);
+//    }
 }
-class DrawPanel extends JPanel{
-        int row;
-        int column;
-        int[][] matrix;
-        int count; //特殊type的数量
-        int[] num; //特殊type左上角的数字
-        String[] type; //特殊type：1*2，2*1，2*2
-
-        public DrawPanel(int row, int column, int[][] matrix, int count, int[] num, String[] type){
-            this.row = row;
-            this.column = column;
-            this.matrix = matrix;
-            this.count = count;
-            this.num = num;
-            this.type = type;
-            System.out.println("构造函数");
-        }
-
-        public void paint(Graphics g){
-            int[][] skip = new int[row][column]; //需跳过的block
-            String[] redraw = new String[count]; //需重画的block
-            Graphics2D g2 = (Graphics2D) g;
-            g.drawRect(100,80,120*column,80*row);
-            Font font = new Font("宋体", Font.BOLD, 20);
-            g2.setFont(font);
-            g2.setColor(Color.BLACK);
-            for (int i = 0; i < row; i++){
-                for (int j = 0; j < column; j++){
-                    if (Arrays.binarySearch(num,matrix[i][j]) >= 0){  // 如果是特殊的block
-                        for (int k = 0; k < count; k++){
-                            if (Arrays.binarySearch(num,matrix[i][j]) == k){
-                                if (type[k].equals("1*2")){
-                                    redraw[k] = String.valueOf(i) + j + "12";
-                                }else if (type[k].equals("2*1")){
-                                    redraw[k] = String.valueOf(i) + j + "21";
-                                }else if (type[k].equals("2*2")){
-                                    redraw[k] = String.valueOf(i) + j + "22";
-                                }
-                            }
-                        }
-                        skip[i][j] = 1;
-                    }
-                }
-            }
-
-            System.out.println(matrix[2][3]);
-
-
-            for (int i = 0; i < row; i++){
-                for (int j = 0; j < column; j++){
-                    System.out.print(skip[i][j]);
-                    if (skip[i][j] == 0) {
-                        g.drawRect(100 + 120 * j, 80 + 80 * i, 120, 80); //画1*1的方块
-                    }
-                    /*g.drawRect(100 + 120 * j, 80 + 80 * 1, 120, 80); //画1*1的方块*/
 
 
 
-                    g2.drawString(String.valueOf(matrix[i][j]),100 + 120 * j + 50,80 + 80 * i + 50); //写数字
-                }
-                System.out.println();
-            }
-           /* for (int i = 0; i < count; i++){
-                g.setColor(Color.RED);
-                int x = redraw[i].charAt(0) - 49;
-                int y = redraw[i].charAt(1) - 49;
-                g.drawRect(100 + 120 * x, 80 + 80 * y, 120 * (redraw[i].charAt(3) - 49), 80 * (redraw[i].charAt(2) - 49));
-            }*/
-            /*System.exit(0);*/
-        }
-    }
+
+

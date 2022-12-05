@@ -1,39 +1,46 @@
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.List;
+import java.util.Timer;
 
-public class Board  {
+public class Board extends JComponent {
+    protected Game game;
     static final int MINPOS = 0;
-    static  int MAXXPOS ;
-    static  int MAXYPOS ;
-    Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    HashSet<Board> existedBoards = new HashSet<Board>();
-//    Board previousBoard;
+    protected int MAXXPOS ;
+    protected int MAXYPOS ;
+    protected int[][]matrix;
+    protected Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
+    protected HashSet<Board> existedBoards = new HashSet<Board>();
+    //    Board previousBoard;
 //    Board nextBoard;
     private String hashString;
     private int hashCode;
     private boolean hashCodeCalculated;
-    int idOfBoardExplored;
+//    int idOfBoardExplored;
 
     //StepNumber stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
     //StepNumber stepNumberToSolution = StepNumber.NOT_SOLVED; //step number until the end of best solution.  last step being 0;
     int stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
-    int stepNumberToSolution = Integer.MAX_VALUE;
+    //    int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
-    boolean isBorderLineNode = false;//?
+//    boolean isBorderLineNode = false;
 //    GameSolverData gameSolverData = null;
 
-    public Board parentNode;
-    public Board link;
-
-    public Board(){
-
-    }
+    protected Board parentNode;
+    protected ArrayList<Board> link;
+    protected boolean isvisited=false;
 
 
-    public Board(Block[] blocks) {
-        this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
+
+
+    public Board(int[][] matrix) {
+        this.matrix=matrix;
+        this.MAXXPOS=matrix.length;
+        this.MAXYPOS=matrix[0].length;
     }
 
     public Board(Block[] blocks,int maxX,int maxY) {
@@ -60,7 +67,11 @@ public class Board  {
 //        Arrays.sort(blocks, Block.blockComparator);
     }
 
-    public BlockType getType(int x, int y){ //根据x, y的值判断block的类型
+
+
+
+    //根据x, y的值判断block的类型
+    public BlockType getType(int x, int y){
         for (int i = 0; i < blocks.length; i++){
             if (Math.abs(blocks[i].xPos - x) <= 1 && Math.abs(blocks[i].yPos - y) <= 1 ){
                 if (blocks[i].xPos == x && blocks[i].yPos == y){
@@ -172,7 +183,7 @@ public class Board  {
         return true;
     }
 
-//    //该block数组是否有效，要求每一个block都是有效移动位置
+    //    //该block数组是否有效，要求每一个block都是有效移动位置
 //    public boolean isValid() {
 //        for (int i = 0; i < blocks.length; i++) {
 //            if (!isValidblock(blocks[i])) {
@@ -227,11 +238,11 @@ public class Board  {
 //        return true;
 //    }
 //
-    private static boolean isblockInBoundary(Blockfield block, int xPos, int yPos) {
+    private boolean isblockInBoundary(Blockfield block, int xPos, int yPos) {
         return (xPos >= MINPOS
-                && xPos + block.width - 1 <= MAXXPOS
+                && xPos + block.width - 1 <= this.MAXXPOS
                 && yPos >= MINPOS
-                && yPos + block.height - 1 <= MAXYPOS);
+                && yPos + block.height - 1 <= this.MAXYPOS);
     }
 //
 //    /**
@@ -299,7 +310,7 @@ public class Board  {
     public int hashCode() {
         if (!hashCodeCalculated) {
             hashCode = hashString().hashCode();
-//            hashCodeCalculated = true;
+            hashCodeCalculated = true;
         }
         return hashCode;
     }
@@ -314,24 +325,24 @@ public class Board  {
         return false;
     }
 
-    public void checkWhetherSolved() {
-        // Already solved
-        if (stepNumberToSolution != Integer.MAX_VALUE) {
-            return;
-        }
-
-        // check for new solution   ?
-        for (int i = 0; i < blocks.length; i++) {
-            if (blocks[i].blockfield.blockType == BlockType.SQUARE) {
-                if (blocks[i].xPos == (MAXXPOS - 1) / 2
-                        && blocks[i].yPos == MAXYPOS - 1) {
-                    stepNumberToSolution = 0;
-                    return;
-                }
-            }
-        }
-        return;
-    }
+//    public boolean checkWhetherSolved(Board currentBoard) {
+    // Already solved
+//        if (stepNumberToSolution != Integer.MAX_VALUE) {
+//            return;
+//        }
+//
+//        // check for new solution   ?
+//        for (int i = 0; i < blocks.length; i++) {
+//            if (blocks[i].blockfield.blockType == BlockType.SQUARE) {
+//                if (blocks[i].xPos == (MAXXPOS - 1) / 2
+//                        && blocks[i].yPos == MAXYPOS - 1) {
+//                    stepNumberToSolution = 0;
+//                    return;
+//                }
+//            }
+//        }
+//        return;
+//    }
 
 
     /**
@@ -392,25 +403,26 @@ public class Board  {
      * <p>
      * Comparator of the stepToSolution
      */
-    public class StepToSolutionComparator implements Comparator<Board> {
-        @Override
-        public int compare(Board arg0, Board arg1) {
-
-            return arg0.stepNumberToSolution == arg1.stepNumberToSolution ? 0
-                    : arg0.stepNumberToSolution < arg1.stepNumberToSolution ? -1
-                    : 1;
-        }
-
-    }
-
-    public class StepToInitialNodeComparator implements Comparator<Board> {
-        @Override
-        public int compare(Board arg0, Board arg1) {
-
-            return arg0.stepNumberToInitialNode == arg1.stepNumberToInitialNode ? 0
-                    : arg0.stepNumberToInitialNode < arg1.stepNumberToInitialNode ? -1
-                    : 1;
-        }
-    }
+//    public class StepToSolutionComparator implements Comparator<Board> {
+//        @Override
+//        public int compare(Board arg0, Board arg1) {
+//
+//            return arg0.stepNumberToSolution == arg1.stepNumberToSolution ? 0
+//                    : arg0.stepNumberToSolution < arg1.stepNumberToSolution ? -1
+//                    : 1;
+//        }
+//    }
+//
+//    public class StepToInitialNodeComparator implements Comparator<Board> {
+//        @Override
+//        public int compare(Board arg0, Board arg1) {
+//
+//            return arg0.stepNumberToInitialNode == arg1.stepNumberToInitialNode ? 0
+//                    : arg0.stepNumberToInitialNode < arg1.stepNumberToInitialNode ? -1
+//                    : 1;
+//        }
+//    }
 
 }
+
+

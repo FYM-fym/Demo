@@ -1,22 +1,27 @@
 import java.util.*;
+import java.util.Queue;
+
 import edu.princeton.cs.algs4.*;
-import edu.princeton.cs.algs4.Queue;
 
 public class GameSolver {
-    Graph graph;
+    //    private static Graph graph;
     Game game;
     protected HashMap<String, Board> boardConfigsExplored = new HashMap<>();
-    protected int nextIdOfBoardExplored = 0;
-    Queue<Board> boardConfigWorkQueue=new Queue<>();
-    Board solutionNode;
+    //    protected int nextIdOfBoardExplored = 0;
+    LinkedList<Board> tree=new LinkedList<>();
+    LinkedList <Board> Queue=new LinkedList<>();
+
+//    Board solutionNode;
+//    Frame frame;
 
     public void solve(Game game) {
-        game.initialBoard.idOfBoardExplored = nextIdOfBoardExplored ++;
+//        game.initialBoard.idOfBoardExplored = nextIdOfBoardExplored ++;
 //        已经存在过的棋盘状态放入哈希表里
-        boardConfigsExplored.put(game.initialBoard.hashString(), game.initialBoard);
+//        boardConfigsExplored.put(game.initialBoard.hashString(), game.initialBoard);
         this.game = game;
         buildGraph(game.initialBoard);
-        findOneShortestPath();
+        bfs();
+//        findOneShortestPath();
     }
     /*
     public void insertBoard(ChessStep newitem)
@@ -46,21 +51,19 @@ public class GameSolver {
 }
      */
 
-
-        private void buildGraph (Board currentBoard){
-            int sameLayer = 0;
-            while (currentBoard != null) {
-                for (int i = 0; i < currentBoard.blocks.length; i++) {
-                    //当前可移动的类型
-                    MoveType[] moveTypes = validMoveTypes.get(currentBoard.blocks[i].blockfield.blockType);
-                    for (MoveType moveType : moveTypes) {
-                        Block newBlock = calcNewBlock(currentBoard, currentBoard.blocks[i], moveType);
-                        if (newBlock == null) continue; // Invalid move
-                        Board nextBoard = getNextBoard(currentBoard, currentBoard.blocks[i], newBlock);
-
-
-
-
+    private void buildGraph (Board currentBoard) {
+        while (currentBoard != null) {
+            tree.add(currentBoard);
+            Board nextBoard;
+            System.out.println(tree);
+//                if(currentBoard.link!=null)
+            for (int i = 0; i < currentBoard.link.size(); i++) {
+                for (int j = 0; j < currentBoard.blocks.length; j++) {
+                    nextBoard = getNextBoard(currentBoard, currentBoard.blocks[j]);
+                    if (nextBoard != null && nextBoard.isNewBoard) {
+                        tree.add(nextBoard);
+                        currentBoard.link.add(nextBoard);
+                        nextBoard.parentNode = currentBoard;
                         //??
 //                    PrintUtility.printTestMove(currentBoard, i, currentBoard.blocks[i], moveType, nextBoard);
 //                    if(!nextBoard.equals(solutionNode)&&nextBoard.isNewBoard){
@@ -68,35 +71,52 @@ public class GameSolver {
 //
 //                    }
 
-                        if (nextBoard.stepNumberToSolution < Integer.MAX_VALUE) {
-                            solutionNode = nextBoard; //The first solution we reach is the fastest solution.
-                            return;
-                        }
+//                        if (nextBoard.stepNumberToSolution < Integer.MAX_VALUE) {
+//                            solutionNode = nextBoard; //The first solution we reach is the fastest solution.
+//                            return;
+//                        }
 
                         // Only explore the nodes that have not been explored before.
-                        if (nextBoard.isNewBoard) {
-                            //PrintUtility.printTestMove(currentBoard, i, moveInTest, nextBoardInTest);
-                            boardConfigWorkQueue.enqueue(nextBoard);
-                        }
+//                            if (nextBoard.isNewBoard) {
+//                                Queue.add(nextBoard);
+//                                nextBoard.isNewBoard = false;
+//                            }
                     }
                 }
-                if (!boardConfigWorkQueue.isEmpty())
-                    currentBoard = boardConfigWorkQueue.dequeue();
+                currentBoard = currentBoard.link.get(i);
             }
-        }
-//?
-    protected void findOneShortestPath() {
-        Board iterator = solutionNode;
-        while (iterator != game.initialBoard) {
-            ArrayList<Board> connected = new ArrayList<Board>(iterator.existedBoards);
-            connected.sort(iterator.new StepToInitialNodeComparator());
-            Board previousStep = connected.get(0);
-            previousStep.stepNumberToSolution = iterator.stepNumberToSolution + 1;
-            iterator = previousStep;
         }
     }
 
-//    private static final  MoveType[] validMoveTypesSQUARE =  MoveType.values();
+    private void bfs(){
+        int head = 0;
+        int rear = 0;
+        Queue.add(rear++,tree.get(0));
+        tree.get(0).isvisited=true;
+        while (head != rear) {
+            for (int j = 0; j < Queue.get(head).link.size(); j++) {
+                if (!Queue.get(head).link.get(j).isvisited) {
+                    Queue.add(rear++, Queue.get(head).link.get(j));
+                    Queue.get(head).link.get(j).isvisited=true;
+                }
+            }
+            head++;
+        }
+    }
+
+
+//    protected void findOneShortestPath() {
+//        Board iterator = solutionNode;
+//        while (iterator != game.initialBoard) {
+//            ArrayList<Board> connected = new ArrayList<Board>(iterator.existedBoards);
+//            connected.sort(iterator.new StepToInitialNodeComparator());
+//            Board previousStep = connected.get(0);
+//            previousStep.stepNumberToSolution = iterator.stepNumberToSolution + 1;
+//            iterator = previousStep;
+//        }
+//    }
+
+    //    private static final  MoveType[] validMoveTypesSQUARE =  MoveType.values();
 //    private static final  MoveType[] validMoveTypesHORIZONTAL =  MoveType.values();
 //    private static final  MoveType[] validMoveTypesVERTICAL =  MoveType.values();
 //    private static final  MoveType[] validMoveTypesSINGLE =  MoveType.values();
@@ -111,24 +131,28 @@ public class GameSolver {
     }
 
 
-    Board getNextBoard(Board currentBoard, Block oldBlock, Block newBlock) {
-        Board newBoard = new Board(currentBoard, oldBlock, newBlock);
-        String boardConfigHashString = newBoard.hashString();
-        if (boardConfigsExplored.containsKey(boardConfigHashString) ) {
-            // use the existing instance in game.boardConfigsExplored
-            newBoard = boardConfigsExplored.get(boardConfigHashString);
-            newBoard.isNewBoard = false;
-        }
-        else {
-            newBoard.idOfBoardExplored = nextIdOfBoardExplored ++;
-            boardConfigsExplored.put(boardConfigHashString, newBoard);
-            newBoard.stepNumberToInitialNode = currentBoard.stepNumberToInitialNode + 1;
-            // Check if a solution
-            newBoard.checkWhetherSolved();
-        }
+    private Board getNextBoard(Board currentBoard, Block oldBlock) {
+        MoveType[] moveTypes = validMoveTypes.get(oldBlock.blockfield.blockType);
+        for (MoveType moveType : moveTypes) {
+            Block newBlock = calcNewBlock(currentBoard, oldBlock, moveType);
+            if (newBlock == null) continue;
+            Board newBoard = new Board(currentBoard, oldBlock, newBlock);
+            String boardConfigHashString = newBoard.hashString();
+            if (boardConfigsExplored.containsKey(boardConfigHashString)) {
+                newBoard = boardConfigsExplored.get(boardConfigHashString);
+                newBoard.isNewBoard = false;
+            } else {
+//            newBoard.idOfBoardExplored = nextIdOfBoardExplored ++;
+                boardConfigsExplored.put(boardConfigHashString, newBoard);
+//            newBoard.stepNumberToInitialNode = currentBoard.stepNumberToInitialNode + 1;
+                // Check if a solution
+//            newBoard.checkWhetherSolved();
+            }
 //        newBoard.existedBoards.add(currentBoard);
-        currentBoard.existedBoards.add(newBoard);
-        return newBoard;
+            currentBoard.existedBoards.add(newBoard);
+            return newBoard;
+        }
+        return null;
     }
 
     private static final int[][] moveStepsUP = {{0, -1}};
@@ -149,8 +173,8 @@ public class GameSolver {
 //    static final private int[][] moveStepsRIGHTUP = {{1, 0}, {1, -1}};
 //    static final private int[][] moveStepsRIGHTDOWN = {{1, 0}, {1, 1}};
 
-//根据当前棋盘的情况，当前的block以及移动方向，返回能移动到的block
-    static Block calcNewBlock(Board oldBoard, Block oldBlock, MoveType moveType) {
+    //根据当前棋盘的情况，当前的block以及移动方向，返回能移动到的block
+    protected static Block calcNewBlock(Board oldBoard, Block oldBlock, MoveType moveType) {
         int[][] moveSteps = null;
         switch (moveType) {
             case UP:
@@ -214,4 +238,32 @@ public class GameSolver {
         }
         return new Block(oldBlock, moveSteps[moveSteps.length-1][0], moveSteps[moveSteps.length-1][1]);
     }
+
+    private Board endBoard(){
+        int size=game.initialBoard.MAXXPOS*game.initialBoard.MAXYPOS;
+        int[] solution = new int[size];
+        int m=0;int n=0;
+        while (m<size) {
+            for (int i = 0; i < game.initialBoard.MAXXPOS; i++) {
+                for (int j = 0; j < game.initialBoard.MAXYPOS; j++) {
+                    if(game.initialBoard.matrix[i][j]!=0)
+                        solution[m]=game.initialBoard.matrix[i][j];
+                }
+            }
+            m++;
+        }
+        Arrays.sort(solution);
+        int[][] matrix=new int[game.initialBoard.MAXXPOS][game.initialBoard.MAXYPOS];
+        while (n<size) {
+            for (int i = 0; i < game.initialBoard.MAXXPOS; i++) {
+                for (int j = 0; j < game.initialBoard.MAXYPOS; j++) {
+                    matrix[i][j]=solution[n];
+                }
+            }
+            n++;
+        }
+        Board end=new Board(matrix);
+        return end;
+    }
+
 }
