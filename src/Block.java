@@ -12,9 +12,9 @@ public class Block {
         public int xPos;
         public int yPos;
 
-        private String hashString;  //当前块的哈希值
-        private int hashCode;//??
-        private boolean hashCodeCalculated = false;//?
+        public String hashString;  //当前块的哈希值
+        public int hashCode;//??
+        public boolean hashCodeCalculated = false;//?
 //        protected static Comparator<Block> blockComparator = new Comparator<Block>() {
 //
 ////???
@@ -33,17 +33,19 @@ public class Block {
     }
 
 
-    public Block(Block block, int deltaXPos, int deltaYPos) {
+    public  Block(Block block, int deltaXPos, int deltaYPos) {
         this.blockfield = block.blockfield;
         this.xPos = block.xPos + deltaXPos;
         this.yPos = block.yPos + deltaYPos;
+        this.hashString = this.hashString();
+        this.hashCode =  this.hashCode();
     }
 
 
 //用哈希值存当前块的信息
     public String hashString() {
         if (hashString == null) {
-            hashString = new StringBuilder(blockfield.blockType.toString()).append(xPos).append(yPos).toString();
+            hashString = new StringBuilder(blockfield.blockType.toString()).append(xPos).append(yPos).append(blockfield.number).toString();
         }
         return hashString;
     }
@@ -51,7 +53,7 @@ public class Block {
     @Override
     public int hashCode() {
         if (!hashCodeCalculated) {
-            hashCode = hashString().hashCode();
+            hashCode = hashString().hashCode() & Integer.MAX_VALUE;
             hashCodeCalculated = true;
         }
         return hashCode;

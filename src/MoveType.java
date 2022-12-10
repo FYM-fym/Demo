@@ -1,5 +1,5 @@
 public enum MoveType {
-    UP, DOWN, LEFT, RIGHT,
+    U, D, L, R,
 //    UP2, DOWN2, LEFT2, RIGHT2,NOTHING
 //    UPLEFT, DOWNLEFT, LEFTUP, RIGHTUP, UPRIGHT, DOWNRIGHT, LEFTDOWN, RIGHTDOWN
     // Make sure every 4 of the types are sorted in the same order of UP, DOWN, LEFT, RIGHT
