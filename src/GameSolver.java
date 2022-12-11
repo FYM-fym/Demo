@@ -6,24 +6,18 @@ public class GameSolver {
     Game game;
     protected HashMap<String, Board> boardConfigsExplored = new HashMap<>();
     static int sp = -1;  //最终结果shortest path，用于存最短路径的长度。如果无路径，返回-1
-
+    int[][] matrix;
+    int layer = 0;
 
     public void solve(Game game) {
 //        已经存在过的棋盘状态放入哈希表里
         this.game = game;
-        System.out.println(game.initialBoard.num.length + " 456");
-        System.out.println(game.initialBoard.type.length + " 123");
-        if(game.initialBoard.count == 0 ) System.out.println("step1");
-        if(game.initialBoard.num == null) System.out.println("step2");
-        if(game.initialBoard.type == null) System.out.println("step3");
+        matrix = endMatrix(game.initialBoard);
         bfs(game.initialBoard);
 
     }
-
     //判定该棋盘是否进过队
     /*static boolean[] inq = new boolean[Integer.MAX_VALUE-2];*/
-
-
     static class node{
         Board currentBoard;
         node parent = null;
@@ -38,7 +32,6 @@ public class GameSolver {
 
     public void bfs(Board currentBoard){
         boardConfigsExplored.put(currentBoard.hashString,currentBoard);
-        Board nextBoard;
         Queue<node> q = new LinkedList<>();
         ArrayList<int[][]> distance = new ArrayList<>(); // 最短路径中matrix的arraylist数组
         Stack<node> path = new Stack<>(); //用于记录最短路径上的结点
@@ -51,15 +44,12 @@ public class GameSolver {
             //如果该棋盘为终点
             for(int i = 0 ; i < currentBoard.matrix.length ; i ++){
                 for(int j = 0 ; j < currentBoard.matrix[i].length ; j ++){
-                    if(temp.currentBoard.matrix[i][j] != endBoard().matrix[i][j]){
+                    if(temp.currentBoard.matrix[i][j] != matrix[i][j]){
                         flag = false;
                         break;
                     }
                 }
             }
-            /*System.out.println(temp.currentBoard.hashCode());
-            System.out.println(endBlocks().hashCode());
-            if (temp.currentBoard.hashCode() != endBlocks().hashCode()) flag = false;*/
             if(flag){//找到最终结点
                 sp = temp.step;
                 path.push(temp);
@@ -70,12 +60,22 @@ public class GameSolver {
                 break;
             }
             //不是终点
+
             for(int i = 0 ; i < currentBoard.blocks.length; i++) {
-                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
-                    /*ArrayList<Board> next = NextBoard(temp.currentBoard, temp.currentBoard.blocks[i]);*/
-                    ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], currentBoard.count, currentBoard.num, currentBoard.type);
+                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK){
+                    ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], temp.currentBoard.BlockNumber, currentBoard.num, currentBoard.type);
                     if (next.size() == 0) continue;
+
                     for (int j = 0; j < next.size(); j++){
+                        if (next.get(j).isNewBoard && Arrays.toString(next.get(j).matrix[0]).equals(Arrays.toString(this.matrix[0])) && layer == 0){
+                            layer++;
+                            q.clear();
+                            node newNode = new node(next.get(j),temp.step + 1);
+                            q.offer(newNode);
+                            newNode.parent = temp;
+                            i = currentBoard.blocks.length;
+                            break;
+                        }
                         if (next.get(j).isNewBoard){
                             node newNode = new node(next.get(j),temp.step + 1);
                             q.offer(newNode);
@@ -84,17 +84,6 @@ public class GameSolver {
                     }
                 }
             }
-            /*for(int i = 0 ; i < currentBoard.blocks.length; i++) {
-                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
-                    nextBoard = getNextBoard(temp.currentBoard, temp.currentBoard.blocks[i]); //如果block[i]不能移动，nextBoard = null
-                    if (nextBoard != null && nextBoard.isNewBoard) {   // ?? isNewBoard是否可用
-                        node newNode = new node(nextBoard, temp.step + 1);
-                        q.offer(newNode);
-                        newNode.parent = temp; //给每一个新生成的node记录其父节点
-                        *//*inq[nextBoard.hashCode()] = true; //结点入队时标记已入队*//*
-                    }
-                }
-            }*/
         }
         if(sp == -1){
             System.out.println("No");
@@ -111,7 +100,7 @@ public class GameSolver {
     }
 
 
-    private Board getNextBoard(Board currentBoard, Block oldBlock) {
+    /*private Board getNextBoard(Board currentBoard, Block oldBlock) {
         MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
         for (MoveType moveType : moveTypes) {
             Block newBlock = calcNewBlock(currentBoard, oldBlock, moveType); // 如果有效，返回新的block.否则返回null
@@ -123,7 +112,7 @@ public class GameSolver {
             newBoard.hashString = newBoard.hashString();
             newBoard.hashCode = newBoard.hashCode();
             if (boardConfigsExplored.containsKey(newBoard.hashString)) {
-                /*newBoard = boardConfigsExplored.get(newBoard.hashString);*/
+                *//*newBoard = boardConfigsExplored.get(newBoard.hashString);*//*
                 newBoard.isNewBoard = false;
             } else {
                 boardConfigsExplored.put(newBoard.hashString, newBoard);
@@ -132,9 +121,9 @@ public class GameSolver {
             return newBoard;
         }
         return null;
-    }
+    }*/
 
-    private ArrayList<Board> NextBoard(Board currentBoard, Block oldBlock) {
+    /*private ArrayList<Board> NextBoard(Board currentBoard, Block oldBlock) {
         ArrayList<Board> arrayList = new ArrayList<>();
         MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
         for (MoveType moveType : moveTypes) {
@@ -147,7 +136,7 @@ public class GameSolver {
             newBoard.hashString = newBoard.hashString();
             newBoard.hashCode = newBoard.hashCode();
             if (boardConfigsExplored.containsKey(newBoard.hashString)) {
-                /*newBoard = boardConfigsExplored.get(newBoard.hashString);*/
+                *//*newBoard = boardConfigsExplored.get(newBoard.hashString);*//*
                 newBoard.isNewBoard = false;
             } else {
                 boardConfigsExplored.put(newBoard.hashString, newBoard);
@@ -165,28 +154,19 @@ public class GameSolver {
             arrayList.add(newBoard);
         }
         return arrayList;
-    }
-    private ArrayList<Board> Next(Board currentBoard, Block oldBlock, int count, int[] num, String[] type) {
+    }*/
+    private ArrayList<Board> Next1(Board currentBoard, Block oldBlock, int BlockNumber, int[] num, String[] type) {
         ArrayList<Board> arrayList = new ArrayList<>();
-        MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
-        for (MoveType moveType : moveTypes) {
+        for (MoveType moveType : MoveType.values()) {
             if (!currentBoard.isValidMove(oldBlock,moveType)) continue;
             int[][] newMatrix = getNextMatrix(currentBoard,oldBlock,moveType);
             Board board = new Board(newMatrix);
             board.row = newMatrix.length;
             board.column = newMatrix[0].length;
-            board.count = count;
             board.num = num;
             board.type = type;
             board.everyStep = oldBlock.blockfield.number + " " + moveType;
-
-            int BlockNumber = board.row * board.column; //棋盘中block的数量
-
-            for (int i = 0; i < type.length; i++){
-                if (type[i].equals("1*2") || type[i].equals("2*1")){
-                    BlockNumber--;
-                }else BlockNumber -= 3;
-            }
+            board.BlockNumber = BlockNumber;
             board.blocks = new Block[BlockNumber];
             int k = 0;
             ArrayList<Integer> arrayList1 = new ArrayList<>();
@@ -235,17 +215,81 @@ public class GameSolver {
                 board.isNewBoard = false;
             }else {
                 boardConfigsExplored.put(board.hashString, board);
-                for (int i = 0; i < board.matrix.length; i++){
+                arrayList.add(board);
+            }
+        }
+        return arrayList;
+    }
+
+    private ArrayList<Board> Next(Board currentBoard, Block oldBlock, int BlockNumber, int[] num, String[] type) {
+        ArrayList<Board> arrayList = new ArrayList<>();
+        for (MoveType moveType : MoveType.values()) {
+            if (!currentBoard.isValidMove(oldBlock,moveType)) continue;
+            int[][] newMatrix = getNextMatrix(currentBoard,oldBlock,moveType);
+            Board board = new Board(newMatrix);
+            board.row = newMatrix.length;
+            board.column = newMatrix[0].length;
+            board.num = num;
+            board.type = type;
+            board.everyStep = oldBlock.blockfield.number + " " + moveType;
+            board.BlockNumber = BlockNumber;
+            board.blocks = new Block[BlockNumber];
+            int k = 0;
+            ArrayList<Integer> arrayList1 = new ArrayList<>();
+            for (int i = 0; i < board.column; i++){
+                for (int j = 0; j < board.row; j++){
+                    if (k < BlockNumber){
+                        if (DrawPanel.contains(num,board.matrix[j][i]) >= 0){
+                            switch (type[DrawPanel.contains(num, board.matrix[j][i])]) {
+                                case "1*2" -> {
+                                    board.blocks[k] = new Block(new Blockfield(BlockType.HORIZONTAL, board.matrix[j][i]), i, j);
+                                    arrayList1.add(board.matrix[j][i + 1]);
+                                }
+                                case "2*1" -> {
+                                    board.blocks[k] = new Block(new Blockfield(BlockType.VERTICAL, board.matrix[j][i]), i, j);
+                                    arrayList1.add(board.matrix[j + 1][i]);
+                                }
+                                case "2*2" -> {
+                                    board.blocks[k] = new Block(new Blockfield(BlockType.SQUARE, board.matrix[j][i]), i, j);
+                                    arrayList1.add(board.matrix[j][i + 1]);
+                                    arrayList1.add(board.matrix[j + 1][i]);
+                                    arrayList1.add(board.matrix[j + 1][i + 1]);
+                                }
+                            }
+                            board.blocks[k].hashString = board.blocks[k].hashString();
+                            board.blocks[k].hashCode = board.blocks[k].hashCode();
+                            k++;
+                        }else {
+                            if (board.matrix[j][i] == 0){
+                                board.blocks[k] = new Block(new Blockfield(BlockType.BLANK, 0), i, j);
+                                board.blocks[k].hashString = board.blocks[k].hashString();
+                                board.blocks[k].hashCode = board.blocks[k].hashCode();
+                                k++;
+                            }else if (!arrayList1.contains(board.matrix[j][i])){
+                                board.blocks[k] = new Block(new Blockfield(BlockType.SINGLE, board.matrix[j][i]), i, j);
+                                board.blocks[k].hashString = board.blocks[k].hashString();
+                                board.blocks[k].hashCode = board.blocks[k].hashCode();
+                                k++;
+                            }
+                        }
+                    }
+                }
+            }
+            board.hashString = board.hashString();
+            board.hashCode = board.hashCode();
+            if (boardConfigsExplored.containsKey(board.hashString)){
+                board.isNewBoard = false;
+            }else {
+                boardConfigsExplored.put(board.hashString, board);
+                /*for (int i = 0; i < board.matrix.length; i++){
                     for (int j = 0; j < board.matrix[0].length; j++){
                         System.out.print(board.matrix[i][j] + "  ");
                     }
                     System.out.println();
                 }
-                System.out.println();
+                System.out.println();*/
                 arrayList.add(board);
             }
-
-
 
             /*Block newBlock = calcNewBlock(currentBoard, oldBlock, moveType); // 如果有效，返回新的block.否则返回null
             if (newBlock == null) continue;//判断移动是否有效
@@ -277,13 +321,13 @@ public class GameSolver {
     }
 
 
-    private static final int[][] moveStepsUP = {{0, -1}};
+    /*private static final int[][] moveStepsUP = {{0, -1}};
     private static final int[][] moveStepsDOWN = {{0, 1}};
     private static final int[][] moveStepsLEFT = {{-1, 0}};
-    private static final int[][] moveStepsRIGHT = {{1, 0}};
+    private static final int[][] moveStepsRIGHT = {{1, 0}};*/
 
     //根据当前棋盘的情况，当前的block以及移动方向，返回能移动到的block
-    protected static Block calcNewBlock(Board oldBoard, Block oldBlock, MoveType moveType) {
+    /*protected static Block calcNewBlock(Board oldBoard, Block oldBlock, MoveType moveType) {
         int[][] moveSteps = null;
         switch (moveType) {
             case U:
@@ -305,7 +349,7 @@ public class GameSolver {
             return null;
         }
         return new Block(oldBlock, moveSteps[0][0], moveSteps[0][1]);
-    }
+    }*/
 
 
     protected int[][] getNextMatrix(Board oldBoard, Block oldBlock, MoveType moveType) {
@@ -409,7 +453,7 @@ public class GameSolver {
         return matrix;
     }
 
-    public Board endBlocks(){
+    /*public Board endBlocks(){
         Board a = game.initialBoard; // 设 a 为初始棋盘
         int BlockNumber = a.row * a.column;
         for (int i = 0; i < a.type.length; i++){
@@ -460,9 +504,20 @@ public class GameSolver {
             }
         }
         return new Board(blocks, a.column, a.row);
+    }*/
+    public int[][] endMatrix(Board board){
+        int[][] matrix = new int[board.row][board.column];
+        for (int i = 0; i < board.row; i++){
+            for (int j = 0; j < board.column; j++){
+                if (i * board.column + j + 1 > board.max){
+                    matrix[i][j] = 0;
+                }else matrix[i][j] = i * board.column + j + 1;
+            }
+        }
+        return matrix;
     }
 
-    protected Board endBoard(){
+    /*protected Board endBoard(){
         int size=game.initialBoard.MAXXPOS*game.initialBoard.MAXYPOS;
         ArrayList<Integer> endlist=new ArrayList<>();
         int[] solution = new int[size];
@@ -488,7 +543,6 @@ public class GameSolver {
                 }
             }
         }
-        Board end=new Board(matrix);
-        return end;
-    }
+        return new Board(matrix);
+    }*/
 }
