@@ -61,6 +61,7 @@ public class GameSolver {
             }
             //不是终点
 
+
             for(int i = 0 ; i < currentBoard.blocks.length; i++) {
                 if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK){
                     ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], temp.currentBoard.BlockNumber, currentBoard.num, currentBoard.type);
