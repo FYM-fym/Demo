@@ -1,19 +1,10 @@
 import javax.swing.*;
-import java.awt.*;
-import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.List;
-import java.util.Timer;
 
 public class Board extends JComponent {
     protected int MAXXPOS ;
     protected int MAXYPOS ;
     protected int[][]matrix;
-    protected Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    //    Board previousBoard;
-//    Board nextBoard;
+    protected Block[] blocks;
     public String hashString;
     public int hashCode;
     public boolean hashCodeCalculated;
@@ -24,6 +15,8 @@ public class Board extends JComponent {
     int count;
     int[] num;
     String[] type;
+    int BlockNumber;
+    int max;
 
 
     public Board(int[][] matrix) {
@@ -34,7 +27,6 @@ public class Board extends JComponent {
 
     public Board(Block[] blocks,int maxX,int maxY) {
         this.blocks = blocks;
-//        Arrays.sort(blocks, Block.blockComparator);
         MAXXPOS=maxX;
         MAXYPOS=maxY;
     }
@@ -49,6 +41,7 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i] == newBlock) blocks[i] = new Block(oldBlock.blockfield, newBlock.xPos, newBlock.yPos);
             }
         }
+
         /*for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
                 if(oldBoard.blocks[i] == newBlock) blocks[i] = oldBlock;
@@ -59,6 +52,7 @@ public class Board extends JComponent {
                 blocks[i] = newBlock;
             }
         }*/
+
         /*for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
                 blocks[i] = oldBoard.blocks[i];
@@ -66,10 +60,12 @@ public class Board extends JComponent {
                 blocks[i] = newBlock;
             }
         }*/
-//        for (int i = 0; i < blocks.length; i++) {
-//            System.out.print((blocks[i].blockfield.number) + "X = "+ blocks[i].xPos + "  Y = " + blocks[i].yPos);
-//            System.out.println();
-//        }
+
+        for (int i = 0; i < blocks.length; i++) {
+            System.out.print((blocks[i].blockfield.number) + "X = "+ blocks[i].xPos + "  Y = " + blocks[i].yPos);
+            System.out.println();
+        }
+
         /*if (oldBlock.blockfield.blockType == BlockType.SINGLE && newBlock.xPos + 1 == oldBlock.xPos){ // 1*1向左移动
             for (int i = 0; i < blocks.length; i++){
                 if (oldBoard.blocks[i] != oldBlock && oldBoard.blocks[i] != newBlock) blocks[i] = oldBoard.blocks[i];
@@ -91,6 +87,8 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i] == newBlock) blocks[i] = new Block(oldBlock.blockfield, newBlock.xPos, newBlock.yPos);
             }
         }*/
+
+
         /*if (oldBlock.blockfield.blockType == BlockType.HORIZONTAL && newBlock.xPos + 1 == oldBlock.xPos){ // 1*2向左移动
             for (int i = 0; i < blocks.length; i++){
                 if (oldBoard.blocks[i] != oldBlock && !(oldBoard.blocks[i].xPos + 1 == oldBlock.xPos && oldBoard.blocks[i].yPos == oldBlock.yPos)) blocks[i] = oldBoard.blocks[i];
@@ -98,6 +96,7 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i].xPos + 1 == oldBlock.xPos && oldBoard.blocks[i].yPos == oldBlock.yPos)  blocks[i] = new Block(oldBoard.blocks[i].blockfield, oldBlock.xPos + 1, oldBlock.yPos);
             }
         }*/
+
         /*blocks = new Block[oldBoard.blocks.length];
         for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
@@ -217,96 +216,12 @@ public class Board extends JComponent {
         return true;
     }
 
-    //    //该block数组是否有效，要求每一个block都是有效移动位置
-//    public boolean isValid() {
-//        for (int i = 0; i < blocks.length; i++) {
-//            if (!isValidblock(blocks[i])) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-//
-//    private boolean isValidblock(Block a) {
-//        return isValidMove(a, a);
-//    }
-//
-//    boolean isValidMove(Block oldBlock, int deltaXPos, int deltaYPos) {
-//        // The block is within the board boundary
-//        if (!isblockInBoundary(oldBlock.blockfield, oldBlock.xPos + deltaXPos, oldBlock.yPos + deltaYPos)) return false;
-//
-//        // No overlapping block placements
-//        for (Block block : blocks) {
-//            if (block != oldBlock) {
-//                if (areOverlappingblocks(block, oldBlock, deltaXPos, deltaYPos)) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//
-//    /**
-//     * @param oldBlock
-//     * @param newBlock
-//     * @return Check whether the move from oldBlockPlacment to newBlock is a valid move
-//     * The newBlock should be within the board boundary and does not overlap with any
-//     * other blocks.
-//     */
-//
-//    private boolean isValidMove(Block oldBlock, Block newBlock) {
-//
-//        assert newBlock != null;
-//        // The block is within the board boundary
-//        assert isblockInBoundary(newBlock.blockfield, newBlock.xPos, newBlock.yPos);
-//        //减少了移动的种类，是否需要？？？
-//        // No overlapping block placements  没有跨过其它棋子移动
-//        for (int i = 0; i < blocks.length; i++) {
-//            if (blocks[i] != oldBlock) {
-//                if (areOverlappingblocks(blocks[i], newBlock)) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
     private boolean isblockInBoundary(Blockfield block, int xPos, int yPos) {
         return (xPos >= 0
                 && xPos + block.width - 1 < this.MAXXPOS
                 && yPos >= 0
                 && yPos + block.height - 1 < this.MAXYPOS);
     }
-//
-//    /**
-//     * Check whether 2 blocks are overlapping each other.
-//     * xPos overlapping = a overlaps b from left or right
-//     * yPos overlapping = a overlaps b from up or down
-//     */
-//
-//    private static boolean areOverlappingblocks(Block a, Block b) {
-//        return (b.xPos >= a.xPos
-//                && b.xPos <= a.xPos + a.blockfield.width - 1
-//                || a.xPos >= b.xPos
-//                && a.xPos <= b.xPos + b.blockfield.width - 1)
-//                && (b.yPos >= a.yPos
-//                && b.yPos <= a.yPos + a.blockfield.height - 1
-//                || a.yPos >= b.yPos
-//                && a.yPos <= b.yPos + b.blockfield.height - 1);
-//    }
-//
-//
-//    private static boolean areOverlappingblocks(Block a, Block b, int deltaXPos, int deltaYPos) {
-//        return (b.xPos + deltaXPos >= a.xPos
-//                && b.xPos + deltaXPos <= a.xPos + a.blockfield.width - 1
-//                || a.xPos >= b.xPos + deltaXPos
-//                && a.xPos <= b.xPos + deltaXPos + b.blockfield.width - 1)
-//                && (b.yPos + deltaYPos >= a.yPos
-//                && b.yPos + deltaYPos <= a.yPos + a.blockfield.height - 1
-//                || a.yPos >= b.yPos + deltaYPos
-//                && a.yPos <= b.yPos + deltaYPos + b.blockfield.height - 1);
-//    }
 
 //    存棋盘的哈希值
     public String hashString() {
@@ -320,16 +235,6 @@ public class Board extends JComponent {
         return hashString;
     }
 
-//    @Deprecated
-//    private static String hashString(Block[] blocks) {
-//        String hashString;
-//        StringBuilder hashStringBuilder = new StringBuilder();
-//        for (int i = 0; i < blocks.length; i++) {
-//            hashStringBuilder.append(blocks[i].hashString());
-//        }
-//        hashString = hashStringBuilder.toString();
-//        return hashString;
-//    }
 
     @Override
     public int hashCode() {
@@ -341,7 +246,6 @@ public class Board extends JComponent {
     }
 
     @Override
-    // Needed for HashSet connectedBoards
     public boolean equals(Object obj) {
         Board b = (Board) obj;
         if (hashString().equals(b.hashString())) {
@@ -349,25 +253,6 @@ public class Board extends JComponent {
         }
         return false;
     }
-
-//    public boolean checkWhetherSolved(Board currentBoard) {
-    // Already solved
-//        if (stepNumberToSolution != Integer.MAX_VALUE) {
-//            return;
-//        }
-//
-//        // check for new solution   ?
-//        for (int i = 0; i < blocks.length; i++) {
-//            if (blocks[i].blockfield.blockType == BlockType.SQUARE) {
-//                if (blocks[i].xPos == (MAXXPOS - 1) / 2
-//                        && blocks[i].yPos == MAXYPOS - 1) {
-//                    stepNumberToSolution = 0;
-//                    return;
-//                }
-//            }
-//        }
-//        return;
-//    }
 }
 
 
