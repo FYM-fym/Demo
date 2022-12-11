@@ -4,6 +4,7 @@ import java.util.Stack;
 
 public class GameSolver {
     Game game;
+    int layer = 0;
     protected HashMap<String, Board> boardConfigsExplored = new HashMap<>();
     static int sp = -1;  //最终结果shortest path，用于存最短路径的长度。如果无路径，返回-1
 
@@ -11,13 +12,12 @@ public class GameSolver {
     public void solve(Game game) {
 //        已经存在过的棋盘状态放入哈希表里
         this.game = game;
-        System.out.println(game.initialBoard.num.length + " 456");
-        System.out.println(game.initialBoard.type.length + " 123");
-        if(game.initialBoard.count == 0 ) System.out.println("step1");
-        if(game.initialBoard.num == null) System.out.println("step2");
-        if(game.initialBoard.type == null) System.out.println("step3");
+//        System.out.println(game.initialBoard.num.length + " 456");
+//        System.out.println(game.initialBoard.type.length + " 123");
+//        if(game.initialBoard.count == 0 ) System.out.println("step1");
+//        if(game.initialBoard.num == null) System.out.println("step2");
+//        if(game.initialBoard.type == null) System.out.println("step3");
         bfs(game.initialBoard);
-
     }
 
     //判定该棋盘是否进过队
@@ -36,82 +36,151 @@ public class GameSolver {
     }
 
 
-    public void bfs(Board currentBoard){
-        boardConfigsExplored.put(currentBoard.hashString,currentBoard);
-        Board nextBoard;
-        Queue<node> q = new LinkedList<>();
-        ArrayList<int[][]> distance = new ArrayList<>(); // 最短路径中matrix的arraylist数组
-        Stack<node> path = new Stack<>(); //用于记录最短路径上的结点
-        q.add(new node(currentBoard,0));
-        /*inq[currentBoard.hashCode()] = true; //用棋盘的哈希值代表棋盘数据*/
+//    public void bfs(Board currentBoard){
+//        boardConfigsExplored.put(currentBoard.hashString,currentBoard);
+//        Queue<node> q = new LinkedList<>();
+//        ArrayList<int[][]> distance = new ArrayList<>(); // 最短路径中matrix的arraylist数组
+//        Stack<node> path = new Stack<>(); //用于记录最短路径上的结点
+//        q.add(new node(currentBoard,0));
+//        /*inq[currentBoard.hashCode()] = true; //用棋盘的哈希值代表棋盘数据*/
+//
+//        while(!q.isEmpty()){
+//            node temp = q.poll();
+//            boolean flag=true;
+//            //如果该棋盘为终点
+//            for(int i = 0 ; i < currentBoard.matrix.length ; i ++){
+//                for(int j = 0 ; j < currentBoard.matrix[i].length ; j ++){
+//                    if(temp.currentBoard.matrix[i][j] != endBoard().matrix[i][j]){
+//                        flag = false;
+//                        break;
+//                    }
+//                }
+//            }
+//            /*System.out.println(temp.currentBoard.hashCode());
+//            System.out.println(endBlocks().hashCode());
+//            if (temp.currentBoard.hashCode() != endBlocks().hashCode()) flag = false;*/
+//            if(flag){//找到最终结点
+//                sp = temp.step;
+//                path.push(temp);
+//                while(temp.parent != null){
+//                    path.push(temp.parent);
+//                    temp = temp.parent;
+//                }
+//                break;
+//            }
+//            //不是终点
+//            for(int i = 0 ; i < currentBoard.blocks.length; i++) {
+//                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
+//                    /*ArrayList<Board> next = NextBoard(temp.currentBoard, temp.currentBoard.blocks[i]);*/
+//                    ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], currentBoard.count, currentBoard.num, currentBoard.type);
+//                    if (next.size() == 0) continue;
+//                    for (int j = 0; j < next.size(); j++){
+//                        if (next.get(j).isNewBoard){
+//                            node newNode = new node(next.get(j),temp.step + 1);
+//                            q.offer(newNode);
+//                            newNode.parent = temp;
+//                        }
+//                    }
+//                }
+//            }
+//            /*for(int i = 0 ; i < currentBoard.blocks.length; i++) {
+//                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
+//                    nextBoard = getNextBoard(temp.currentBoard, temp.currentBoard.blocks[i]); //如果block[i]不能移动，nextBoard = null
+//                    if (nextBoard != null && nextBoard.isNewBoard) {   // ?? isNewBoard是否可用
+//                        node newNode = new node(nextBoard, temp.step + 1);
+//                        q.offer(newNode);
+//                        newNode.parent = temp; //给每一个新生成的node记录其父节点
+//                        */
+//            /*inq[nextBoard.hashCode()] = true; //结点入队时标记已入队*//*
+//                    }
+//                }
+//            }*/
+//        }
+//        if(sp == -1){
+//            System.out.println("No");
+//        }else{
+//            System.out.println("Yes");
+//            System.out.println(sp);
+//            while(!path.isEmpty()){
+//                node a = path.pop();
+//                distance.add(a.currentBoard.matrix);
+//                System.out.println(a.currentBoard.everyStep);
+//            }
+//        }
+//        this.game.distance=distance;
+//    }
+public void bfs(Board currentBoard){
+    boardConfigsExplored.put(currentBoard.hashString,currentBoard);
+    Queue<node> q = new LinkedList<>();
+    ArrayList<int[][]> distance = new ArrayList<>(); // 最短路径中matrix的arraylist数组
+    Stack<node> path = new Stack<>(); //用于记录最短路径上的结点
+    q.add(new node(currentBoard,0));
+    /*inq[currentBoard.hashCode()] = true; //用棋盘的哈希值代表棋盘数据*/
 
-        while(!q.isEmpty()){
-            node temp = q.poll();
-            boolean flag=true;
-            //如果该棋盘为终点
-            for(int i = 0 ; i < currentBoard.matrix.length ; i ++){
-                for(int j = 0 ; j < currentBoard.matrix[i].length ; j ++){
-                    if(temp.currentBoard.matrix[i][j] != endBoard().matrix[i][j]){
-                        flag = false;
+    while(!q.isEmpty()){
+        node temp = q.poll();
+        boolean flag=true;
+        //如果该棋盘为终点
+        for(int i = 0 ; i < currentBoard.matrix.length ; i ++){
+            for(int j = 0 ; j < currentBoard.matrix[i].length ; j ++){
+                if(temp.currentBoard.matrix[i][j] != matrix[i][j]){
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if(flag){//找到最终结点
+            sp = temp.step;
+            path.push(temp);
+            while(temp.parent != null){
+                path.push(temp.parent);
+                temp = temp.parent;
+            }
+            break;
+        }
+        //不是终点
+
+        for(int i = 0 ; i < currentBoard.blocks.length; i++) {
+            if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK){
+                ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], temp.currentBoard.BlockNumber, currentBoard.num, currentBoard.type);
+                if (next.size() == 0) continue;
+
+                for (int j = 0; j < next.size(); j++){
+                    if (next.get(j).isNewBoard && Arrays.toString(next.get(j).matrix[0]).equals(Arrays.toString(this.matrix[0])) && layer == 0){
+                        layer++;
+                        q.clear();
+                        node newNode = new node(next.get(j),temp.step + 1);
+                        q.offer(newNode);
+                        newNode.parent = temp;
+                        i = currentBoard.blocks.length;
                         break;
                     }
-                }
-            }
-            /*System.out.println(temp.currentBoard.hashCode());
-            System.out.println(endBlocks().hashCode());
-            if (temp.currentBoard.hashCode() != endBlocks().hashCode()) flag = false;*/
-            if(flag){//找到最终结点
-                sp = temp.step;
-                path.push(temp);
-                while(temp.parent != null){
-                    path.push(temp.parent);
-                    temp = temp.parent;
-                }
-                break;
-            }
-            //不是终点
-            for(int i = 0 ; i < currentBoard.blocks.length; i++) {
-                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
-                    /*ArrayList<Board> next = NextBoard(temp.currentBoard, temp.currentBoard.blocks[i]);*/
-                    ArrayList<Board> next = Next(temp.currentBoard, temp.currentBoard.blocks[i], currentBoard.count, currentBoard.num, currentBoard.type);
-                    if (next.size() == 0) continue;
-                    for (int j = 0; j < next.size(); j++){
-                        if (next.get(j).isNewBoard){
-                            node newNode = new node(next.get(j),temp.step + 1);
-                            q.offer(newNode);
-                            newNode.parent = temp;
-                        }
-                    }
-                }
-            }
-            /*for(int i = 0 ; i < currentBoard.blocks.length; i++) {
-                if (temp.currentBoard.blocks[i].blockfield.blockType != BlockType.BLANK) {
-                    nextBoard = getNextBoard(temp.currentBoard, temp.currentBoard.blocks[i]); //如果block[i]不能移动，nextBoard = null
-                    if (nextBoard != null && nextBoard.isNewBoard) {   // ?? isNewBoard是否可用
-                        node newNode = new node(nextBoard, temp.step + 1);
+                    if (next.get(j).isNewBoard){
+                        node newNode = new node(next.get(j),temp.step + 1);
                         q.offer(newNode);
-                        newNode.parent = temp; //给每一个新生成的node记录其父节点
-                        *//*inq[nextBoard.hashCode()] = true; //结点入队时标记已入队*//*
+                        newNode.parent = temp;
                     }
                 }
-            }*/
-        }
-        if(sp == -1){
-            System.out.println("No");
-        }else{
-            System.out.println("Yes");
-            System.out.println(sp);
-            while(!path.isEmpty()){
-                node a = path.pop();
-                distance.add(a.currentBoard.matrix);
-                System.out.println(a.currentBoard.everyStep);
             }
         }
-        this.game.distance=distance;
     }
+    if(sp == -1){
+        System.out.println("No");
+    }else{
+        System.out.println("Yes");
+        System.out.println(sp);
+        while(!path.isEmpty()){
+            node a = path.pop();
+            distance.add(a.currentBoard.matrix);
+            System.out.println(a.currentBoard.everyStep);
+        }
+    }
+    this.game.distance=distance;
+}
 
 
-    private Board getNextBoard(Board currentBoard, Block oldBlock) {
+
+    /*private Board getNextBoard(Board currentBoard, Block oldBlock) {
         MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
         for (MoveType moveType : moveTypes) {
             Block newBlock = calcNewBlock(currentBoard, oldBlock, moveType); // 如果有效，返回新的block.否则返回null
@@ -123,7 +192,7 @@ public class GameSolver {
             newBoard.hashString = newBoard.hashString();
             newBoard.hashCode = newBoard.hashCode();
             if (boardConfigsExplored.containsKey(newBoard.hashString)) {
-                /*newBoard = boardConfigsExplored.get(newBoard.hashString);*/
+                /*newBoard = boardConfigsExplored.get(newBoard.hashString);
                 newBoard.isNewBoard = false;
             } else {
                 boardConfigsExplored.put(newBoard.hashString, newBoard);
@@ -132,9 +201,9 @@ public class GameSolver {
             return newBoard;
         }
         return null;
-    }
+    }*/
 
-    private ArrayList<Board> NextBoard(Board currentBoard, Block oldBlock) {
+   /* private ArrayList<Board> NextBoard(Board currentBoard, Block oldBlock) {
         ArrayList<Board> arrayList = new ArrayList<>();
         MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
         for (MoveType moveType : moveTypes) {
@@ -147,7 +216,7 @@ public class GameSolver {
             newBoard.hashString = newBoard.hashString();
             newBoard.hashCode = newBoard.hashCode();
             if (boardConfigsExplored.containsKey(newBoard.hashString)) {
-                /*newBoard = boardConfigsExplored.get(newBoard.hashString);*/
+                newBoard = boardConfigsExplored.get(newBoard.hashString);
                 newBoard.isNewBoard = false;
             } else {
                 boardConfigsExplored.put(newBoard.hashString, newBoard);
@@ -165,7 +234,8 @@ public class GameSolver {
             arrayList.add(newBoard);
         }
         return arrayList;
-    }
+    }*/
+
     private ArrayList<Board> Next(Board currentBoard, Block oldBlock, int count, int[] num, String[] type) {
         ArrayList<Board> arrayList = new ArrayList<>();
         MoveType[] moveTypes = MoveType.values(); // {U,D,L,R}
@@ -244,9 +314,6 @@ public class GameSolver {
                 System.out.println();
                 arrayList.add(board);
             }
-
-
-
             /*Block newBlock = calcNewBlock(currentBoard, oldBlock, moveType); // 如果有效，返回新的block.否则返回null
             if (newBlock == null) continue;//判断移动是否有效
             Board newBoard = new Board(currentBoard, oldBlock, newBlock); // 更新block[]数组
@@ -276,7 +343,7 @@ public class GameSolver {
         return arrayList;
     }
 
-
+/*
     private static final int[][] moveStepsUP = {{0, -1}};
     private static final int[][] moveStepsDOWN = {{0, 1}};
     private static final int[][] moveStepsLEFT = {{-1, 0}};
@@ -306,7 +373,7 @@ public class GameSolver {
         }
         return new Block(oldBlock, moveSteps[0][0], moveSteps[0][1]);
     }
-
+*/
 
     protected int[][] getNextMatrix(Board oldBoard, Block oldBlock, MoveType moveType) {
         int[][] matrix = new int[oldBoard.matrix.length][oldBoard.matrix[0].length];
@@ -409,6 +476,7 @@ public class GameSolver {
         return matrix;
     }
 
+    /*
     public Board endBlocks(){
         Board a = game.initialBoard; // 设 a 为初始棋盘
         int BlockNumber = a.row * a.column;
@@ -460,13 +528,14 @@ public class GameSolver {
             }
         }
         return new Board(blocks, a.column, a.row);
-    }
+    }*/
 
     protected Board endBoard(){
         int size=game.initialBoard.MAXXPOS*game.initialBoard.MAXYPOS;
         ArrayList<Integer> endlist=new ArrayList<>();
         int[] solution = new int[size];
-        int m=0;int n=0;
+        int m=0;
+        int n=0;
         for (int i = 0; i < game.initialBoard.MAXYPOS; i++) {
             for (int j = 0; j < game.initialBoard.MAXXPOS; j++) {
                 if(game.initialBoard.matrix[i][j]!=0) {

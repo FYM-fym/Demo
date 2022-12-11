@@ -12,29 +12,18 @@ public class Board extends JComponent {
     protected int MAXYPOS ;
     protected int[][]matrix;
     protected Block[] blocks; // in sorted order??  棋盘用一个block的数组存当前所有棋子的状态
-    protected HashSet<Board> existedBoards = new HashSet<Board>();
     //    Board previousBoard;
 //    Board nextBoard;
     public String hashString;
     public int hashCode;
     public boolean hashCodeCalculated;
-//    int idOfBoardExplored;
-
-    //StepNumber stepNumberToInitialNode; //the step number counting from the initial node of Board.  first step being 0
-    //StepNumber stepNumberToSolution = StepNumber.NOT_SOLVED; //step number until the end of best solution.  last step being 0;
-    /*int stepNumberToInitialNode;*/ //the step number counting from the initial node of Board.  first step being 0
-    //    int stepNumberToSolution = Integer.MAX_VALUE;
     boolean isNewBoard = true;
-//    boolean isBorderLineNode = false;
-//    GameSolverData gameSolverData = null;
     protected String everyStep;
     int row;
     int column;
     int count;
     int[] num;
     String[] type;
-
-
 
 
     public Board(int[][] matrix) {
@@ -60,7 +49,6 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i] == newBlock) blocks[i] = new Block(oldBlock.blockfield, newBlock.xPos, newBlock.yPos);
             }
         }
-
         /*for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
                 if(oldBoard.blocks[i] == newBlock) blocks[i] = oldBlock;
@@ -71,7 +59,6 @@ public class Board extends JComponent {
                 blocks[i] = newBlock;
             }
         }*/
-
         /*for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
                 blocks[i] = oldBoard.blocks[i];
@@ -79,12 +66,10 @@ public class Board extends JComponent {
                 blocks[i] = newBlock;
             }
         }*/
-
-        for (int i = 0; i < blocks.length; i++) {
-            System.out.print((blocks[i].blockfield.number) + "X = "+ blocks[i].xPos + "  Y = " + blocks[i].yPos);
-            System.out.println();
-        }
-
+//        for (int i = 0; i < blocks.length; i++) {
+//            System.out.print((blocks[i].blockfield.number) + "X = "+ blocks[i].xPos + "  Y = " + blocks[i].yPos);
+//            System.out.println();
+//        }
         /*if (oldBlock.blockfield.blockType == BlockType.SINGLE && newBlock.xPos + 1 == oldBlock.xPos){ // 1*1向左移动
             for (int i = 0; i < blocks.length; i++){
                 if (oldBoard.blocks[i] != oldBlock && oldBoard.blocks[i] != newBlock) blocks[i] = oldBoard.blocks[i];
@@ -106,8 +91,6 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i] == newBlock) blocks[i] = new Block(oldBlock.blockfield, newBlock.xPos, newBlock.yPos);
             }
         }*/
-
-
         /*if (oldBlock.blockfield.blockType == BlockType.HORIZONTAL && newBlock.xPos + 1 == oldBlock.xPos){ // 1*2向左移动
             for (int i = 0; i < blocks.length; i++){
                 if (oldBoard.blocks[i] != oldBlock && !(oldBoard.blocks[i].xPos + 1 == oldBlock.xPos && oldBoard.blocks[i].yPos == oldBlock.yPos)) blocks[i] = oldBoard.blocks[i];
@@ -115,7 +98,6 @@ public class Board extends JComponent {
                 if (oldBoard.blocks[i].xPos + 1 == oldBlock.xPos && oldBoard.blocks[i].yPos == oldBlock.yPos)  blocks[i] = new Block(oldBoard.blocks[i].blockfield, oldBlock.xPos + 1, oldBlock.yPos);
             }
         }*/
-
         /*blocks = new Block[oldBoard.blocks.length];
         for (int i = 0; i < blocks.length; i++) {
             if (oldBoard.blocks[i] != oldBlock) {
@@ -127,11 +109,7 @@ public class Board extends JComponent {
                 blocks[i] = newBlock;
             }
         }*/
-
-
         }
-
-
 
 
     //根据x, y的值判断block的类型
@@ -330,15 +308,6 @@ public class Board extends JComponent {
 //                && a.yPos <= b.yPos + deltaYPos + b.blockfield.height - 1);
 //    }
 
-    /**
-     * @return hashString
-     * <p>
-     * hashString uniquely identify a Board by specifying the position of all the BlockPlacments.
-     * Note the blockPlacments[] is sorted by Block type and position for this to work.
-     * Also note the name of the Block is not considered.
-     */
-
-
 //    存棋盘的哈希值
     public String hashString() {
         if (hashString == null) {
@@ -399,86 +368,6 @@ public class Board extends JComponent {
 //        }
 //        return;
 //    }
-
-
-    /**
-     * @param nextNode
-     * @return Calculated the move that takes the current Board to the nextNode
-     */
-
-
-    /*public Move calculcateMove(Board nextNode) {
-        Move move;
-        boolean foundMatch;
-        Block oldBlock = null, newBlock = null;
-        for (int i = 0; i < blocks.length; i++) {
-            foundMatch = false;
-            for (int j = 0; j < nextNode.blocks.length; j++) {
-                if (blocks[i].blockfield.blockType == nextNode.blocks[j].blockfield.blockType
-                        && blocks[i].xPos == nextNode.blocks[j].xPos
-                        && blocks[i].yPos == nextNode.blocks[j].yPos) {
-                    // found match
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (!foundMatch) {
-                oldBlock = blocks[i];
-            }
-        }
-
-        for (int j = 0; j < nextNode.blocks.length; j++) {
-            foundMatch = false;
-            for (int i = 0; i < blocks.length; i++) {
-                if (blocks[i].blockfield.blockType == nextNode.blocks[j].blockfield.blockType
-                        && blocks[i].xPos == nextNode.blocks[j].xPos
-                        && blocks[i].yPos == nextNode.blocks[j].yPos) {
-                    // found match
-                    foundMatch = true;
-                    break;
-                }
-            }
-            if (!foundMatch) {
-                newBlock = nextNode.blocks[j];
-            }
-        }
-
-        if (oldBlock != null && newBlock != null) {
-            int deltaXPos = newBlock.xPos - oldBlock.xPos;
-            int deltaYPos = newBlock.yPos - oldBlock.yPos;
-            move = new Move(this, oldBlock, deltaXPos, deltaYPos);
-            return move;
-        }
-        assert false;
-        return null;
-    }*/
-
-
-    /**
-     * @author weian.zhu
-     * <p>
-     * Comparator of the stepToSolution
-     */
-//    public class StepToSolutionComparator implements Comparator<Board> {
-//        @Override
-//        public int compare(Board arg0, Board arg1) {
-//
-//            return arg0.stepNumberToSolution == arg1.stepNumberToSolution ? 0
-//                    : arg0.stepNumberToSolution < arg1.stepNumberToSolution ? -1
-//                    : 1;
-//        }
-//    }
-//
-//    public class StepToInitialNodeComparator implements Comparator<Board> {
-//        @Override
-//        public int compare(Board arg0, Board arg1) {
-//
-//            return arg0.stepNumberToInitialNode == arg1.stepNumberToInitialNode ? 0
-//                    : arg0.stepNumberToInitialNode < arg1.stepNumberToInitialNode ? -1
-//                    : 1;
-//        }
-//    }
-
 }
 
 

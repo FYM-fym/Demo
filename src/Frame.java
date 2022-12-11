@@ -121,11 +121,6 @@ public class Frame extends JFrame {
         setVisible(true);
 
         //固定最终棋盘的路径
-
-
-
-
-
         /*int[][] matrix1 = new int[5][6];
         int[][] matrix2 = new int[5][6];
         int[][] matrix3 = new int[5][6];
@@ -262,20 +257,20 @@ public class Frame extends JFrame {
 
     }
 
-    public Frame(Board board) {
-        this.board = board;
-        setBounds(500, 100, 1000, 600);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setLayout(null);
-        setVisible(false);
-        setTitle("DS BB");
-//        addBoard();
-
-        addGoButton();
-        setVisible(true);
-        addLoadButton();
-        setVisible(true);
-    }
+//    public Frame(Board board) {
+//        this.board = board;
+//        setBounds(500, 100, 1000, 600);
+//        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        setLayout(null);
+//        setVisible(false);
+//        setTitle("DS BB");
+////        addBoard();
+//
+//        addGoButton();
+//        setVisible(true);
+//        addLoadButton();
+//        setVisible(true);
+//    }
 
 
 //    public void addBoard() throws IOException {
@@ -285,7 +280,7 @@ public class Frame extends JFrame {
 //    }
 
 
-    protected void repaint(Graphics2D g2) {
+    /*protected void repaint(Graphics2D g2) {
         this.setVisible(false);
 //        setContentPane(new DrawPanel(matrix));
         repaint();
@@ -297,7 +292,7 @@ public class Frame extends JFrame {
         g2.setColor(Color.RED);
         g2.drawString(String.valueOf(22), 100 + 120 + 50, 80 + 80 + 50);
 
-    }
+    }*/
 
     private void addGoButton() {
         JButton button = new JButton("Go");
@@ -320,11 +315,7 @@ public class Frame extends JFrame {
                 }
                 System.out.println();
                 game.distance.remove(0);
-
-
             }
-
-
         });
         button.setLocation(350,20);
         button.setSize(100, 50);
