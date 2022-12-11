@@ -17,7 +17,6 @@ public class GameSolver {
 
     }
     //判定该棋盘是否进过队
-    /*static boolean[] inq = new boolean[Integer.MAX_VALUE-2];*/
     static class node{
         Board currentBoard;
         node parent = null;
@@ -36,7 +35,6 @@ public class GameSolver {
         ArrayList<int[][]> distance = new ArrayList<>(); // 最短路径中matrix的arraylist数组
         Stack<node> path = new Stack<>(); //用于记录最短路径上的结点
         q.add(new node(currentBoard,0));
-        /*inq[currentBoard.hashCode()] = true; //用棋盘的哈希值代表棋盘数据*/
 
         while(!q.isEmpty()){
             node temp = q.poll();
